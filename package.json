@@ -6,22 +6,43 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "errors-live": "tsc --noEmit --incremental --watch"
   },
   "dependencies": {
+    "@clerk/localizations": "^3.20.1",
+    "@clerk/nextjs": "^6.25.4",
+    "@supabase/supabase-js": "^2.52.0",
+    "@vanilla-extract/css": "^1.17.4",
+    "@vanilla-extract/recipes": "^0.5.7",
+    "axios": "^1.10.0",
+    "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
+    "formik": "^2.4.6",
+    "framer-motion": "^12.23.6",
+    "jwt-decode": "^4.0.0",
+    "lucide-react": "^0.525.0",
+    "next": "15.4.1",
     "react": "19.1.0",
+    "react-day-picker": "^9.8.0",
+    "react-device-detect": "^2.2.3",
     "react-dom": "19.1.0",
-    "next": "15.4.1"
+    "react-popper-tooltip": "^4.4.2",
+    "react-select": "^5.10.2",
+    "swr": "^2.3.4",
+    "uuid": "^11.1.0",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
+    "@vanilla-extract/next-plugin": "^2.4.14",
     "eslint": "^9",
     "eslint-config-next": "15.4.1",
-    "@eslint/eslintrc": "^3"
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }

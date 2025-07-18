@@ -1,115 +1,256 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+import { checkRouteReturnUser } from "@/auth/checkRouteReturnUserTranslations";
+import { useAuthData } from "@/context/AuthDataContext";
+import { Routes } from "@/utils/routes";
+import { GetServerSideProps } from "next";
+import Head from "next/head";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const features = [
+  {
+    icon: "🕒",
+    title: "Timbratura Smart",
+    desc: "Registra ingressi e uscite in tempo reale, ovunque tu sia.",
+  },
+  {
+    icon: "🔒",
+    title: "Sicurezza Garantita",
+    desc: "I tuoi dati sono protetti e accessibili solo a chi vuoi tu.",
+  },
+  {
+    icon: "⚡",
+    title: "Facile e Veloce",
+    desc: "Interfaccia intuitiva, pronta all'uso per scuole e PMI.",
+  },
+  {
+    icon: "📊",
+    title: "Reportistica Avanzata",
+    desc: "Scarica report dettagliati e monitora le presenze in un click.",
+  },
+];
 
 export default function Home() {
+  const { userAuthId } = useAuthData();
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20`}
-    >
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <>
+      <Head>
+        <title>TimbraQui - Timbratura Online per Scuole e PMI</title>
+        <meta
+          name="description"
+          content="TimbraQui è il nuovo servizio di timbratura online pensato per scuole e PMI. Semplifica la gestione delle presenze con una soluzione digitale, sicura e facile da usare."
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/pages/index.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      </Head>
+      <main
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(135deg, #f0f4ff 0%, #e0e7ef 100%)",
+          padding: "0",
+        }}
+      >
+        {/* HERO SECTION */}
+        <section
+          style={{
+            width: "100%",
+            maxWidth: 900,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "3rem 1.5rem 2rem 1.5rem",
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "1.5rem",
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+            <div
+              style={{
+                background: "#2563eb10",
+                borderRadius: "50%",
+                width: 120,
+                height: 120,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 16,
+              }}
+            >
+              <svg
+                width="64"
+                height="64"
+                viewBox="0 0 64 64"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  x="8"
+                  y="16"
+                  width="48"
+                  height="36"
+                  rx="8"
+                  fill="#2563eb"
+                />
+                <rect
+                  x="16"
+                  y="8"
+                  width="32"
+                  height="12"
+                  rx="6"
+                  fill="#60a5fa"
+                />
+                <rect x="24" y="32" width="16" height="8" rx="4" fill="#fff" />
+                <circle cx="32" cy="40" r="3" fill="#2563eb" />
+              </svg>
+            </div>
+            <h1
+              style={{
+                fontSize: "2.8rem",
+                fontWeight: 800,
+                color: "#1e293b",
+                margin: 0,
+                lineHeight: 1.1,
+              }}
+            >
+              TimbraQui
+            </h1>
+            <h2
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: 400,
+                color: "#334155",
+                margin: 0,
+              }}
+            >
+              La timbratura online semplice, sicura e smart per scuole e PMI
+            </h2>
+            <p
+              style={{
+                maxWidth: 540,
+                color: "#475569",
+                fontSize: "1.15rem",
+                margin: "1.5rem 0 0.5rem 0",
+              }}
+            >
+              Dimentica i vecchi cartellini! Con TimbraQui gestisci le presenze
+              in modo digitale, ovunque e in qualsiasi momento.
+            </p>
+            <a
+              href={userAuthId ? Routes.dashboard : Routes.login}
+              style={{
+                background: "linear-gradient(90deg, #2563eb 60%, #60a5fa 100%)",
+                color: "#fff",
+                padding: "1.1rem 2.8rem",
+                borderRadius: "999px",
+                fontWeight: 700,
+                fontSize: "1.2rem",
+                textDecoration: "none",
+                boxShadow: "0 4px 24px rgba(37,99,235,0.13)",
+                marginTop: 24,
+                transition: "background 0.2s, transform 0.2s",
+                display: "inline-block",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.background =
+                  "linear-gradient(90deg, #1d4ed8 60%, #3b82f6 100%)")
+              }
+              onMouseOut={(e) =>
+                (e.currentTarget.style.background =
+                  "linear-gradient(90deg, #2563eb 60%, #60a5fa 100%)")
+              }
+            >
+              Prova Gratis
+            </a>
+          </div>
+        </section>
+
+        {/* FEATURES SECTION */}
+        <section
+          style={{
+            width: "100%",
+            maxWidth: 900,
+            margin: "0 auto",
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: "2rem",
+            padding: "2rem 1.5rem 1rem 1.5rem",
+          }}
+        >
+          {features.map((f, i) => (
+            <div
+              key={f.title}
+              style={{
+                background: "#fff",
+                borderRadius: 18,
+                boxShadow: "0 2px 16px rgba(30,41,59,0.07)",
+                padding: "2rem 1.5rem 1.5rem 1.5rem",
+                minWidth: 220,
+                maxWidth: 260,
+                flex: "1 1 220px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                textAlign: "center",
+                transition: "transform 0.15s",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.transform =
+                  "translateY(-6px) scale(1.03)")
+              }
+              onMouseOut={(e) => (e.currentTarget.style.transform = "none")}
+            >
+              <div style={{ fontSize: 38, marginBottom: 12 }}>{f.icon}</div>
+              <div
+                style={{
+                  fontWeight: 700,
+                  fontSize: "1.15rem",
+                  color: "#2563eb",
+                  marginBottom: 6,
+                }}
+              >
+                {f.title}
+              </div>
+              <div style={{ color: "#475569", fontSize: "1rem" }}>{f.desc}</div>
+            </div>
+          ))}
+        </section>
+
+        {/* FOOTER */}
+        <footer
+          style={{
+            width: "100%",
+            marginTop: "3rem",
+            padding: "2rem 0 1rem 0",
+            textAlign: "center",
+            color: "#64748b",
+            fontSize: "1rem",
+          }}
+        >
+          <div style={{ marginBottom: 8 }}>
+            Hai domande?{" "}
+            <a
+              href="mailto:info@timbraqui.it"
+              style={{ color: "#2563eb", textDecoration: "underline" }}
+            >
+              Contattaci
+            </a>
+          </div>
+          <div>
+            © {new Date().getFullYear()} TimbraQui. Tutti i diritti riservati.
+          </div>
+        </footer>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = (ctx) =>
+  checkRouteReturnUser(ctx);
