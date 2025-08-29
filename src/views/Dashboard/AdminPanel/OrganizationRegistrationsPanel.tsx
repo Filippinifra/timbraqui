@@ -31,6 +31,7 @@ export const OrganizationRegistrationsPanel: FC<{
   const axios = useAxios();
   const { showToast } = useToast();
   const [isAddRegOpen, setIsAddRegOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
   const [filterUserId, setFilterUserId] = useState<string | "all">("all");
   const [view, setView] = useState<view>("list");
 
@@ -49,7 +50,11 @@ export const OrganizationRegistrationsPanel: FC<{
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <Typography variant="p-m-r">Timbrature utenti</Typography>
         <div style={{ display: "flex", gap: 8 }}>
-          <Button onClick={() => {}} variant="secondary" icon="Download">
+          <Button
+            onClick={() => setIsExportOpen(true)}
+            variant="secondary"
+            icon="Download"
+          >
             Esporta timbrature
           </Button>
           <Button onClick={() => setIsAddRegOpen(true)} icon="Plus">
@@ -235,6 +240,190 @@ export const OrganizationRegistrationsPanel: FC<{
                   Annulla
                 </Button>
                 <Button type="submit">Salva</Button>
+              </div>
+            </Form>
+          )}
+        </Formik>
+      </Modal>
+
+      <Modal
+        visible={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
+        title="Esporta timbrature"
+      >
+        <Formik
+          enableReinitialize
+          validationSchema={Yup.object({
+            dateRange: Yup.object({
+              from: Yup.date().required("Data inizio richiesta"),
+              to: Yup.date().required("Data fine richiesta"),
+            }).required(),
+            userIds: Yup.array()
+              .min(1, "Seleziona almeno un utente")
+              .required(),
+            format: Yup.string().oneOf(["csv", "json"]).required(),
+          })}
+          initialValues={{
+            dateRange: {
+              from: dayjs().startOf("month").toDate(),
+              to: dayjs().endOf("month").toDate(),
+            },
+            userIds: users.map((u) => u.id),
+            format: "csv" as "csv" | "json",
+          }}
+          onSubmit={async (values, { setSubmitting }) => {
+            try {
+              const filteredRegistrations =
+                orgRegistrations?.filter((r) => {
+                  const regDate = dayjs(r.date);
+                  const isInRange =
+                    regDate.isAfter(values.dateRange.from) &&
+                    regDate.isBefore(values.dateRange.to);
+                  const isUserSelected = values.userIds.includes(r.userId);
+                  return isInRange && isUserSelected;
+                }) || [];
+
+              if (filteredRegistrations.length === 0) {
+                showToast(
+                  "error",
+                  "Nessuna timbratura trovata per i criteri selezionati"
+                );
+                return;
+              }
+
+              if (values.format === "csv") {
+                const csvContent = [
+                  "Utente,Data,Ora",
+                  ...filteredRegistrations.map((r) => {
+                    const u = users.find((u) => u.id === r.userId);
+                    const userName = u
+                      ? `${u.name} ${u.surname}`.trim() || u.email
+                      : r.userId;
+                    const date = dayjs(r.date).format("DD/MM/YYYY");
+                    const time = dayjs(r.date).format("HH:mm");
+                    return `"${userName}","${date}","${time}"`;
+                  }),
+                ].join("\n");
+
+                const blob = new Blob([csvContent], {
+                  type: "text/csv;charset=utf-8;",
+                });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = `timbrature_${dayjs(
+                  values.dateRange.from
+                ).format("YYYY-MM-DD")}_${dayjs(values.dateRange.to).format(
+                  "YYYY-MM-DD"
+                )}.csv`;
+                link.click();
+              } else {
+                const jsonContent = JSON.stringify(
+                  filteredRegistrations.map((r) => {
+                    const u = users.find((u) => u.id === r.userId);
+                    return {
+                      utente: u
+                        ? `${u.name} ${u.surname}`.trim() || u.email
+                        : r.userId,
+                      data: dayjs(r.date).format("DD/MM/YYYY"),
+                      ora: dayjs(r.date).format("HH:mm"),
+                      timestamp: r.date,
+                    };
+                  }),
+                  null,
+                  2
+                );
+
+                const blob = new Blob([jsonContent], {
+                  type: "application/json",
+                });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = `timbrature_${dayjs(
+                  values.dateRange.from
+                ).format("YYYY-MM-DD")}_${dayjs(values.dateRange.to).format(
+                  "YYYY-MM-DD"
+                )}.json`;
+                link.click();
+              }
+
+              showToast("success", "Esportazione completata");
+              setIsExportOpen(false);
+            } catch (error) {
+              showToast("error", "Errore durante l'esportazione");
+            } finally {
+              setSubmitting(false);
+            }
+          }}
+        >
+          {({ handleSubmit, setFieldValue, values }) => (
+            <Form onSubmit={handleSubmit}>
+              <div style={{ display: "grid", gap: 16, minWidth: 400 }}>
+                <div>
+                  <Typography variant="p-s-sb">Intervallo date</Typography>
+                  <Spacer size={4} />
+                  <DatePicker
+                    value={values.dateRange}
+                    onChange={(dr) => {
+                      setFieldValue(
+                        "dateRange",
+                        dr || { from: new Date(), to: new Date() }
+                      );
+                    }}
+                    datesDisabled={() => false}
+                  />
+                </div>
+
+                <div>
+                  <Typography variant="p-s-sb">Utenti</Typography>
+                  <Spacer size={4} />
+                  <DropdownForm
+                    name="userIds"
+                    title=""
+                    placeholder="Seleziona utenti"
+                    options={users.map((u) => ({
+                      label: `${u.name} ${u.surname}`.trim() || u.email,
+                      value: u.id,
+                    }))}
+                    isMulti
+                    menuPosition="absolute"
+                  />
+                </div>
+
+                <div>
+                  <Typography variant="p-s-sb">Formato</Typography>
+                  <Spacer size={4} />
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <Button
+                      type="button"
+                      variant={
+                        values.format === "csv" ? "primary" : "secondary"
+                      }
+                      onClick={() => setFieldValue("format", "csv")}
+                    >
+                      CSV
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={
+                        values.format === "json" ? "primary" : "secondary"
+                      }
+                      onClick={() => setFieldValue("format", "json")}
+                    >
+                      JSON
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              <Spacer size={16} />
+              <div style={{ display: "flex", justifyContent: "end", gap: 8 }}>
+                <Button
+                  variant="secondary"
+                  type="button"
+                  onClick={() => setIsExportOpen(false)}
+                >
+                  Annulla
+                </Button>
+                <Button type="submit">Esporta</Button>
               </div>
             </Form>
           )}
