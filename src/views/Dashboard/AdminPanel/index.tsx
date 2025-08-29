@@ -14,7 +14,7 @@ export const AdminPanel = ({
   return (
     <div>
       <UsersPanel organization={organization} />
-      <Spacer size={24} />
+      <Spacer size={32} />
       <OrganizationRegistrationsPanel
         organization={organization}
         users={users || []}

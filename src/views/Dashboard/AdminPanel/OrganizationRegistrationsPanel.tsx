@@ -48,9 +48,14 @@ export const OrganizationRegistrationsPanel: FC<{
     <>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <Typography variant="p-m-r">Timbrature utenti</Typography>
-        <Button onClick={() => setIsAddRegOpen(true)}>
-          Aggiungi timbratura
-        </Button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button onClick={() => {}} variant="secondary" icon="Download">
+            Esporta timbrature
+          </Button>
+          <Button onClick={() => setIsAddRegOpen(true)} icon="Plus">
+            Aggiungi timbratura
+          </Button>
+        </div>
       </div>
       <Spacer size={8} />
 

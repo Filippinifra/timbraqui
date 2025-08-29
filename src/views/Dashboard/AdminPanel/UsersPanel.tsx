@@ -84,7 +84,9 @@ export const UsersPanel = ({
 
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <Typography variant="p-m-r">Utenti</Typography>
-        <Button onClick={openAdd}>Aggiungi utente</Button>
+        <Button onClick={openAdd} icon="Plus">
+          Aggiungi utente
+        </Button>
       </div>
       <Spacer size={8} />
       <Panel>
