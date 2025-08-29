@@ -36,7 +36,7 @@ export const FieldTitle: FC<{
               </Typography>
             }
           >
-            <Icon name="FileWarning" color={colors.error} />
+            <Icon name="MessageCircleWarning" color={colors.error} />
           </Tooltip>
         )}
       </div>

@@ -7,5 +7,4 @@ export const tooltipWrapperClass = style({
   border: `1px solid ${colors.greyLight}`,
   borderRadius: 8,
   position: "relative",
-  zIndex: 1,
 });

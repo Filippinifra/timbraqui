@@ -3,3 +3,7 @@
 button {
   cursor: pointer;
 }
+
+.rdp-caption_label {
+  z-index: auto !important;
+}

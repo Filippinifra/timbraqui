@@ -1,4 +1,5 @@
 import { Button } from "@/components/Dumb/Button";
+import { DatePicker } from "@/components/Dumb/DatePicker";
 import { Dropdown } from "@/components/Dumb/Dropdown";
 import { DropdownForm } from "@/components/Dumb/FormElements/DropdownForm";
 import { InputForm } from "@/components/Dumb/FormElements/InputForm";
@@ -18,6 +19,7 @@ import dayjs from "dayjs";
 import { Form, Formik } from "formik";
 import { FC, useState } from "react";
 import { v4 } from "uuid";
+import * as Yup from "yup";
 import { Calendar } from "../UserPanel/Calendar";
 
 type view = "list" | "calendar";
@@ -32,8 +34,11 @@ export const OrganizationRegistrationsPanel: FC<{
   const [filterUserId, setFilterUserId] = useState<string | "all">("all");
   const [view, setView] = useState<view>("list");
 
-  const { registration: orgRegistrations, registrationLoading } =
-    useOrganizationRegistrations(organization.id);
+  const {
+    registration: orgRegistrations,
+    registrationLoading,
+    refreshRegistrations,
+  } = useOrganizationRegistrations(organization.id);
 
   const orgRegistrationsToShow = orgRegistrations
     ?.filter((r) => (filterUserId === "all" ? true : r.userId === filterUserId))
@@ -140,23 +145,37 @@ export const OrganizationRegistrationsPanel: FC<{
       >
         <Formik
           enableReinitialize
+          validationSchema={Yup.object({
+            userId: Yup.string().required("Campo obbligatorio"),
+            date: Yup.date().required("Campo obbligatorio"),
+            time: Yup.string()
+              .matches(/^\d{2}:\d{2}$/g, "Formato HH:mm")
+              .required("Campo obbligatorio"),
+          })}
           initialValues={{
             userId: "",
-            datetime: dayjs().format("YYYY-MM-DDTHH:mm"),
+            date: new Date(),
+            time: dayjs().format("HH:mm"),
           }}
           onSubmit={async (values, { setSubmitting }) => {
             try {
               const payload: RegistrationApi = {
                 id: v4(),
                 created_at: dayjs().toISOString(),
-                date: dayjs(values.datetime).toISOString(),
+                date: dayjs(values.date)
+                  .hour(Number(values.time.split(":")[0]))
+                  .minute(Number(values.time.split(":")[1]))
+                  .toISOString(),
                 user_id: values.userId as unknown as string,
               } as RegistrationApi;
+
               await axios<RegistrationApi>(
                 "/api/registrations",
                 "POST",
                 payload
               );
+
+              await refreshRegistrations(payload, "add");
               setIsAddRegOpen(false);
               showToast("success", "Timbratura aggiunta");
             } catch {
@@ -166,7 +185,7 @@ export const OrganizationRegistrationsPanel: FC<{
             }
           }}
         >
-          {({ handleSubmit }) => (
+          {({ handleSubmit, setFieldValue, values }) => (
             <Form onSubmit={handleSubmit}>
               <div style={{ display: "grid", gap: 12, minWidth: 340 }}>
                 <DropdownForm
@@ -178,12 +197,26 @@ export const OrganizationRegistrationsPanel: FC<{
                     value: u.id,
                   }))}
                   isRequired
-                  menuPosition="fixed"
+                  menuPosition="absolute"
                 />
+                <div>
+                  <Typography variant="p-s-sb">Data</Typography>
+                  <Spacer size={4} />
+                  <DatePicker
+                    value={{
+                      from: values.date as Date,
+                      to: values.date as Date,
+                    }}
+                    onChange={(dr) => {
+                      setFieldValue("date", dr?.to || new Date());
+                    }}
+                    datesDisabled={() => false}
+                  />
+                </div>
                 <InputForm
-                  name="datetime"
-                  title="Data e ora"
-                  placeholder=""
+                  name="time"
+                  title="Ora"
+                  placeholder="HH:mm"
                   isRequired
                 />
               </div>
