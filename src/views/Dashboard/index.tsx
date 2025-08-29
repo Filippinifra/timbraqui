@@ -31,7 +31,7 @@ export const DashboardView = () => {
           <Spacer size={16} />
           <div style={{ display: "flex", justifyContent: "center" }}>
             <SignOutButton>
-              <Button>Esci</Button>
+              <Button variant="tertiary">Esci</Button>
             </SignOutButton>
           </div>
         </div>
@@ -51,7 +51,7 @@ export const DashboardView = () => {
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <Typography variant="h1">Dashboard</Typography>
         <SignOutButton>
-          <Button>Esci</Button>
+          <Button variant="tertiary">Esci</Button>
         </SignOutButton>
       </div>
       <Spacer size={24} />

@@ -3,13 +3,13 @@ import { Modal } from "@/components/Dumb/Modal";
 import { Panel } from "@/components/Dumb/Panel";
 import { Spacer } from "@/components/Dumb/Spacer";
 import { Typography } from "@/components/Dumb/Typography";
-import { useAuthData } from "@/context/AuthDataContext";
 import { useUsers } from "@/hooks/api/useUsers";
+import { useAxios } from "@/hooks/useAxios";
 import { Organization } from "@/types/Organization";
 import { useState } from "react";
 import { UserFormModal } from "./UserFormModal";
 
-export const AdminPanel = ({
+export const UsersPanel = ({
   organization,
 }: {
   organization: Organization;
@@ -17,35 +17,70 @@ export const AdminPanel = ({
   const { users, usersLoading, usersError, refreshUsers } = useUsers(
     organization.id
   );
-  const { clerkToken } = useAuthData();
+  const axios = useAxios();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mode, setMode] = useState<"add" | "edit">("add");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [userToDeleteId, setUserToDeleteId] = useState<string | null>(null);
+
   const openAdd = () => {
     setMode("add");
     setSelectedUserId(null);
     setIsModalOpen(true);
   };
+
   const openEdit = (id: string) => {
     setMode("edit");
     setSelectedUserId(id);
     setIsModalOpen(true);
   };
+
   const closeModal = () => setIsModalOpen(false);
 
   const confirmDelete = async () => {
     if (!userToDeleteId) return;
-    await fetch(`/api/users?id=${encodeURIComponent(userToDeleteId)}`, {
-      method: "DELETE",
-      headers: { clerk: clerkToken || "" },
-    });
+    await axios(`/api/users?id=${userToDeleteId}`, "DELETE");
     await refreshUsers();
     setUserToDeleteId(null);
   };
 
   return (
     <div>
+      <Modal
+        visible={Boolean(userToDeleteId)}
+        onClose={() => setUserToDeleteId(null)}
+        title={"Conferma eliminazione"}
+      >
+        <Typography variant="p-m-r">
+          {`Sei sicuro di voler eliminare ${
+            users?.find((u) => u.id === userToDeleteId)?.name || "questo utente"
+          }?`}
+        </Typography>
+        <Spacer size={16} />
+        <div style={{ display: "flex", justifyContent: "end", gap: 8 }}>
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={() => setUserToDeleteId(null)}
+          >
+            Annulla
+          </Button>
+          <Button variant="distructive" type="button" onClick={confirmDelete}>
+            Elimina
+          </Button>
+        </div>
+      </Modal>
+      <UserFormModal
+        visible={isModalOpen}
+        onClose={closeModal}
+        mode={mode}
+        organization={organization}
+        selectedUserId={selectedUserId}
+        users={users}
+        refreshUsers={refreshUsers}
+      />
+
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <Typography variant="p-m-r">Utenti</Typography>
         <Button onClick={openAdd}>Aggiungi utente</Button>
@@ -114,54 +149,6 @@ export const AdminPanel = ({
           )
         )}
       </Panel>
-      <Modal
-        visible={Boolean(userToDeleteId)}
-        onClose={() => setUserToDeleteId(null)}
-        title={"Conferma eliminazione"}
-      >
-        <Typography variant="p-m-r">
-          {`Sei sicuro di voler eliminare ${
-            users?.find((u) => u.id === userToDeleteId)?.name || "questo utente"
-          }?`}
-        </Typography>
-        <Spacer size={16} />
-        <div style={{ display: "flex", justifyContent: "end", gap: 8 }}>
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={() => setUserToDeleteId(null)}
-          >
-            Annulla
-          </Button>
-          <Button variant="distructive" type="button" onClick={confirmDelete}>
-            Elimina
-          </Button>
-        </div>
-      </Modal>
-      <UserFormModal
-        visible={isModalOpen}
-        onClose={closeModal}
-        mode={mode}
-        organization={organization}
-        selectedUserId={selectedUserId}
-        users={users}
-        refreshUsers={refreshUsers}
-      />
-      <div
-        style={{
-          margin: "24px 0",
-          background: "#fff",
-          borderRadius: 8,
-          padding: 16,
-          boxShadow: "0 2px 8px #0001",
-        }}
-      >
-        <b>Gestione timbrature (placeholder)</b>
-        <div>
-          Qui puoi vedere, modificare, eliminare e aggiungere le timbrature di
-          tutti gli utenti.
-        </div>
-      </div>
     </div>
   );
 };
