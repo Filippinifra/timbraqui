@@ -44,7 +44,7 @@ export const buttonClasses = recipe({
         ":focus": { outline: `2px solid ${colors.primaryLight}` },
       },
       distructive: {
-        backgroundColor: colors.error,
+        backgroundColor: colors.errorDark,
         ":hover": { outline: `2px solid ${colors.errorLight}` },
         ":disabled": { backgroundColor: colors.disabled },
         ":focus": { outline: `2px solid ${colors.errorLight}` },

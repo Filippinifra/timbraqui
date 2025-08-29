@@ -1,24 +1,24 @@
 export const colors = {
   primary: "#2563eb",
-  primaryLight: "#6bff82",
-  primaryDark: "#0a570d",
-  secondary: "#ffd3bd",
+  primaryLight: "#93c5fd",
+  primaryDark: "#1e40af",
+  secondary: "#e0e7ff",
 
   disabled: "#F5F5F5",
   disabledDark: "#C2C2C2",
 
   background: "white",
 
-  error: "red",
-  errorDark: "#B20000",
-  errorLight: "#FBEFEF",
-  success: "#007505",
-  successDark: "#007505",
-  successLight: "#EBF8EC",
-  warning: "#E5C100",
-  warningLight: "#FAF7E6",
-  info: "#AAC7E1",
-  infoLight: "#F0F8FF",
+  error: "#ef4444",
+  errorDark: "#b91c1c",
+  errorLight: "#fee2e2",
+  success: "#10b981",
+  successDark: "#047857",
+  successLight: "#d1fae5",
+  warning: "#f59e0b",
+  warningLight: "#fef3c7",
+  info: "#60a5fa",
+  infoLight: "#eff6ff",
 
   delete: "#B20000",
 

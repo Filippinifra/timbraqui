@@ -73,7 +73,7 @@ export const Modal: FC<Props> = ({
                 }}
               >
                 <IconButton
-                  icon="Cross"
+                  icon="X"
                   size="xl"
                   variant="tertiary"
                   onClick={onClose}

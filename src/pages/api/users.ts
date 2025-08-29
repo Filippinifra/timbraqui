@@ -15,7 +15,8 @@ export default withApiProtection((req, res) =>
             await supabase
               .from("users")
               .select()
-              .eq("organization_id", req.query.org_id as string)
+              .eq("active", true)
+              .eq("org_id", req.query.org_id as string)
         );
       } else {
         return supabaseLogicReturnApi(
@@ -24,6 +25,7 @@ export default withApiProtection((req, res) =>
             await supabase
               .from("users")
               .select()
+              .eq("active", true)
               .eq("email", req.query.email as string)
         );
       }
@@ -44,6 +46,16 @@ export default withApiProtection((req, res) =>
       return supabaseLogicReturnApi(
         res,
         async () => await supabase.from("users").update(body).eq("id", body.id)
+      );
+    }
+
+    if (req.method === "DELETE") {
+      const id = req.query.id as string;
+
+      return supabaseLogicReturnApi(
+        res,
+        async () =>
+          await supabase.from("users").update({ active: false }).eq("id", id)
       );
     }
   })

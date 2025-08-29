@@ -1,23 +1,152 @@
-export const AdminPanel = () => {
+import { Button } from "@/components/Dumb/Button";
+import { Modal } from "@/components/Dumb/Modal";
+import { Panel } from "@/components/Dumb/Panel";
+import { Spacer } from "@/components/Dumb/Spacer";
+import { Typography } from "@/components/Dumb/Typography";
+import { useAuthData } from "@/context/AuthDataContext";
+import { useUsers } from "@/hooks/api/useUsers";
+import { Organization } from "@/types/Organization";
+import { useState } from "react";
+import { UserFormModal } from "./UserFormModal";
+
+export const AdminPanel = ({
+  organization,
+}: {
+  organization: Organization;
+}) => {
+  const { users, usersLoading, usersError, refreshUsers } = useUsers(
+    organization.id
+  );
+  const { clerkToken } = useAuthData();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mode, setMode] = useState<"add" | "edit">("add");
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [userToDeleteId, setUserToDeleteId] = useState<string | null>(null);
+  const openAdd = () => {
+    setMode("add");
+    setSelectedUserId(null);
+    setIsModalOpen(true);
+  };
+  const openEdit = (id: string) => {
+    setMode("edit");
+    setSelectedUserId(id);
+    setIsModalOpen(true);
+  };
+  const closeModal = () => setIsModalOpen(false);
+
+  const confirmDelete = async () => {
+    if (!userToDeleteId) return;
+    await fetch(`/api/users?id=${encodeURIComponent(userToDeleteId)}`, {
+      method: "DELETE",
+      headers: { clerk: clerkToken || "" },
+    });
+    await refreshUsers();
+    setUserToDeleteId(null);
+  };
+
   return (
-    <div style={{ marginTop: 40 }}>
-      <h2>Gestione utenti e timbrature (Admin)</h2>
-      <div
-        style={{
-          margin: "24px 0",
-          background: "#fff",
-          borderRadius: 8,
-          padding: 16,
-          boxShadow: "0 2px 8px #0001",
-        }}
-      >
-        <b>Tabella utenti (placeholder)</b>
-        <div>
-          Qui puoi modificare, eliminare, aggiungere utenti della tua
-          organizzazione.
-        </div>
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <Typography variant="p-m-r">Utenti</Typography>
+        <Button onClick={openAdd}>Aggiungi utente</Button>
       </div>
-      {/* TODO: Gestione timbrature di tutti gli utenti */}
+      <Spacer size={8} />
+      <Panel>
+        {usersLoading && (
+          <Typography variant="p-s-r">Caricamento utenti...</Typography>
+        )}
+        {usersError && (
+          <Typography variant="p-s-r" color="#ef4444">
+            Errore nel caricamento utenti.
+          </Typography>
+        )}
+        {!!users?.length ? (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: "left", padding: 8 }}>Nome</th>
+                  <th style={{ textAlign: "left", padding: 8 }}>Cognome</th>
+                  <th style={{ textAlign: "left", padding: 8 }}>Email</th>
+                  <th style={{ textAlign: "left", padding: 8 }}>Creato il</th>
+                  <th style={{ textAlign: "left", padding: 8 }}>Azioni</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((u) => (
+                  <tr key={u.id} style={{ borderTop: "1px solid #e2e8f0" }}>
+                    <td style={{ padding: 8 }}>{u.name}</td>
+                    <td style={{ padding: 8 }}>{u.surname}</td>
+                    <td style={{ padding: 8 }}>{u.email}</td>
+                    <td style={{ padding: 8 }}>
+                      <Typography variant="p-s-r" color="#64748b">
+                        {new Date(u.createdAt).toLocaleDateString()}
+                      </Typography>
+                    </td>
+                    <td style={{ padding: 8, height: 60 }}>
+                      {u.id !== organization.adminId && (
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <Button
+                            variant="tertiary"
+                            onClick={() => openEdit(u.id)}
+                          >
+                            Modifica
+                          </Button>
+                          <Button
+                            variant="distructive"
+                            onClick={() => setUserToDeleteId(u.id)}
+                          >
+                            Elimina
+                          </Button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          !usersLoading && (
+            <Typography variant="p-s-r" color="lightgray">
+              Nessun utente presente.
+            </Typography>
+          )
+        )}
+      </Panel>
+      <Modal
+        visible={Boolean(userToDeleteId)}
+        onClose={() => setUserToDeleteId(null)}
+        title={"Conferma eliminazione"}
+      >
+        <Typography variant="p-m-r">
+          {`Sei sicuro di voler eliminare ${
+            users?.find((u) => u.id === userToDeleteId)?.name || "questo utente"
+          }?`}
+        </Typography>
+        <Spacer size={16} />
+        <div style={{ display: "flex", justifyContent: "end", gap: 8 }}>
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={() => setUserToDeleteId(null)}
+          >
+            Annulla
+          </Button>
+          <Button variant="distructive" type="button" onClick={confirmDelete}>
+            Elimina
+          </Button>
+        </div>
+      </Modal>
+      <UserFormModal
+        visible={isModalOpen}
+        onClose={closeModal}
+        mode={mode}
+        organization={organization}
+        selectedUserId={selectedUserId}
+        users={users}
+        refreshUsers={refreshUsers}
+      />
       <div
         style={{
           margin: "24px 0",
