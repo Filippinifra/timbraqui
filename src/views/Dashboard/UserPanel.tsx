@@ -1,5 +1,4 @@
 import { AlertBox } from "@/components/Dumb/AlertBox";
-import { Badge } from "@/components/Dumb/Badge";
 import { Button } from "@/components/Dumb/Button";
 import { Spacer } from "@/components/Dumb/Spacer";
 import { Typography } from "@/components/Dumb/Typography";
@@ -8,8 +7,9 @@ import { useUserRegistrations } from "@/hooks/api/useRegistrations";
 import { usePosition } from "@/hooks/usePosition";
 import { useRegistration } from "@/hooks/useRegistration";
 import { Organization } from "@/types/Organization";
-import dayjs from "dayjs";
+import "dayjs/locale/it";
 import { FC } from "react";
+import { Calendar } from "./Calendar";
 
 export const UserPanel: FC<{ organization: Organization }> = ({
   organization,
@@ -40,18 +40,9 @@ export const UserPanel: FC<{ organization: Organization }> = ({
         </Button>
       )}
       <Spacer size={32} />
-      <Typography variant="p-m-r">Ultime timbrature</Typography>
+      <Typography variant="p-m-r">Le mie timbrature</Typography>
       <Spacer size={8} />
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        {registrations?.reverse().map(({ date, id }) => (
-          <Badge key={id}>{dayjs(date).format("DD/MM/YYYY HH:mm")}</Badge>
-        ))}
-      </div>
-      {registrations?.length === 0 && (
-        <Typography variant="p-s-r" color="lightgray">
-          Nessuna timbratura
-        </Typography>
-      )}
+      <Calendar registrations={registrations} />
     </div>
   );
 };
