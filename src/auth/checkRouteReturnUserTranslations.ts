@@ -13,7 +13,6 @@ import {
 export const checkRouteReturnUser = async (
   context: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>
 ) => {
-  console.log("entro");
   const { req } = context;
   const { getToken } = getAuth(req);
   const currentPath = context.resolvedUrl as StaticRoutes;
@@ -41,8 +40,6 @@ export const checkRouteReturnUser = async (
 
   const isOnlyAuthRoutes = onlyAuthRoutes.includes(currentPath);
   const isOnlyNotAuthRoute = onlyNotAuthRoutes.includes(currentPath);
-
-  console.log(!token, isOnlyAuthRoutes);
 
   if (user && isOnlyNotAuthRoute) {
     return { redirect: { destination: Routes.dashboard, permanent: false } };

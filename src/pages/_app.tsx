@@ -11,12 +11,9 @@ import { itIT } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import { SWRConfig } from "swr";
 
 const App = (props: AppProps) => {
-  const { pathname, locale } = useRouter();
-
   return (
     <>
       <Head>

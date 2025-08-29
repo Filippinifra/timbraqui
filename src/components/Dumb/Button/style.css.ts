@@ -72,6 +72,10 @@ export const buttonClasses = recipe({
     size: {
       m: { padding: "8px 16px", gap: 8 },
       s: { padding: "8px 16px", gap: 4 },
+      l: {
+        padding: "12px 32px",
+        gap: 12,
+      },
     },
   },
 });

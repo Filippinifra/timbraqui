@@ -1,10 +1,11 @@
 import { colors } from "@/utils/colors";
 import { FC } from "react";
 import { Icon, Icons } from "../Icon";
-import { Typography } from "../Typography";
+import { Typography, variant as TypographyVariants } from "../Typography";
 import { buttonClasses, iconRounderWrapperClass } from "./style.css";
 
 type variant = "primary" | "secondary" | "distructive" | "tertiary";
+type size = "m" | "s" | "l";
 
 interface Props {
   variant?: variant;
@@ -14,8 +15,14 @@ interface Props {
   children?: string;
   icon?: Icons;
   fullWidth?: boolean;
-  size?: "m" | "s";
+  size?: size;
 }
+
+const fromSizeToTypographyVariant: { [key in size]: TypographyVariants } = {
+  l: "h3",
+  m: "p-m-r",
+  s: "p-s-r",
+};
 
 export const Button: FC<Props> = ({
   variant = "primary",
@@ -60,7 +67,7 @@ export const Button: FC<Props> = ({
       )}
       {children && (
         <Typography
-          variant={size === "m" ? "p-m-r" : "p-s-r"}
+          variant={fromSizeToTypographyVariant[size]}
           color={getColor()}
         >
           {children}
