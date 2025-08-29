@@ -23,7 +23,7 @@ export const AuthView: FC<{ type: "login" | "register" }> = ({ type }) => {
           </Typography>
           <Spacer size={8} />
           <Typography variant="p-s-r" color={colors.grey}>
-            Da qui puoi accedere all'applicazione
+            {"Da qui puoi accedere all'applicazione"}
           </Typography>
           <Spacer size={32} />
           {type === "login" ? (

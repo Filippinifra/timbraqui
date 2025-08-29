@@ -5,7 +5,6 @@ import { Typography } from "@/components/Dumb/Typography";
 import { CenteredContentHeaderLayout } from "@/components/Layout/CenteredContentHeaderLayout";
 import { useUserInfo } from "@/context/UserInfoContext";
 import { useOrganization } from "@/hooks/api/useOrganization";
-import { BUSINESS_EMAIL } from "@/utils/businessInfo";
 import { colors } from "@/utils/colors";
 import { SignOutButton } from "@clerk/nextjs";
 import { AdminPanel } from "./AdminPanel";
@@ -26,8 +25,9 @@ export const DashboardView = () => {
           <Typography variant="p-m-sb">Utente non abilitato</Typography>
           <Spacer size={8} />
           <Typography variant="p-s-r" color="#64748b">
-            Contatta l'amministratore a <span>{BUSINESS_EMAIL}</span> per
-            abilitare il tuo account.
+            {
+              "Contatta l'amministratore a <span>{BUSINESS_EMAIL}</span> per abilitare il tuo account."
+            }
           </Typography>
           <Spacer size={16} />
           <div style={{ display: "flex", justifyContent: "center" }}>
@@ -41,7 +41,8 @@ export const DashboardView = () => {
   }
 
   if (orgLoading) return <div>Caricamento dati organizzazione...</div>;
-  if (orgError) return <div>Errore nel caricamento dell'organizzazione.</div>;
+  if (orgError)
+    return <div>{"Errore nel caricamento dell'organizzazione."}</div>;
   if (!organization) return <div>Organizzazione non trovata.</div>;
 
   const isAdmin = user.id === organization.adminId;

@@ -184,7 +184,7 @@ export default function Home() {
             padding: "2rem 1.5rem 1rem 1.5rem",
           }}
         >
-          {features.map((f, i) => (
+          {features.map((f) => (
             <div
               key={f.title}
               style={{
