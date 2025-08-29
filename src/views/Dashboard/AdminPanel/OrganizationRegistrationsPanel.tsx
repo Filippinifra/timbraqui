@@ -1,9 +1,12 @@
 import { Button } from "@/components/Dumb/Button";
+import { Dropdown } from "@/components/Dumb/Dropdown";
 import { DropdownForm } from "@/components/Dumb/FormElements/DropdownForm";
 import { InputForm } from "@/components/Dumb/FormElements/InputForm";
 import { Modal } from "@/components/Dumb/Modal";
 import { Panel } from "@/components/Dumb/Panel";
 import { Spacer } from "@/components/Dumb/Spacer";
+import { Switcher } from "@/components/Dumb/Switcher";
+import { Table } from "@/components/Dumb/Table";
 import { Typography } from "@/components/Dumb/Typography";
 import { useToast } from "@/context/ToastContext";
 import { useOrganizationRegistrations } from "@/hooks/api/useRegistrations";
@@ -15,6 +18,9 @@ import dayjs from "dayjs";
 import { Form, Formik } from "formik";
 import { FC, useState } from "react";
 import { v4 } from "uuid";
+import { Calendar } from "../UserPanel/Calendar";
+
+type view = "list" | "calendar";
 
 export const OrganizationRegistrationsPanel: FC<{
   organization: Organization;
@@ -24,43 +30,67 @@ export const OrganizationRegistrationsPanel: FC<{
   const { showToast } = useToast();
   const [isAddRegOpen, setIsAddRegOpen] = useState(false);
   const [filterUserId, setFilterUserId] = useState<string | "all">("all");
+  const [view, setView] = useState<view>("list");
 
-  const {
-    registration: orgRegistrations,
-    registrationLoading,
-  } = useOrganizationRegistrations(organization.id);
+  const { registration: orgRegistrations, registrationLoading } =
+    useOrganizationRegistrations(organization.id);
+
+  const orgRegistrationsToShow = orgRegistrations
+    ?.filter((r) => (filterUserId === "all" ? true : r.userId === filterUserId))
+    .sort((a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf());
 
   return (
     <>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <Typography variant="p-m-r">Timbrature utenti</Typography>
-        <Button onClick={() => setIsAddRegOpen(true)}>Aggiungi timbratura</Button>
+        <Button onClick={() => setIsAddRegOpen(true)}>
+          Aggiungi timbratura
+        </Button>
       </div>
       <Spacer size={8} />
-      <div style={{ maxWidth: 360 }}>
-        <Formik
-          enableReinitialize
-          initialValues={{ userId: filterUserId }}
-          onSubmit={() => {}}
-        >
-          {({ setFieldValue }) => (
-            <Form>
-              <DropdownForm
-                name="userId"
-                title="Filtra per utente"
-                placeholder="Tutti"
-                options={[
-                  { label: "Tutti", value: "all" },
-                  ...users.map((u) => ({
-                    label: `${u.name} ${u.surname}`.trim() || u.email,
-                    value: u.id,
-                  })),
-                ]}
-                menuPosition="fixed"
-              />
-            </Form>
-          )}
-        </Formik>
+
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div style={{ minWidth: 200 }}>
+          <Dropdown
+            onChange={(v) => {
+              setFilterUserId(v.value);
+            }}
+            value={
+              filterUserId && filterUserId !== "all"
+                ? {
+                    label: `${
+                      users.find(({ id }) => id === filterUserId)?.name
+                    } ${users.find(({ id }) => id === filterUserId)?.surname}`,
+                    value: filterUserId,
+                  }
+                : null
+            }
+            placeholder="Tutti"
+            options={[
+              ...(view !== "calendar"
+                ? [{ label: "Tutti", value: "all" }]
+                : []),
+              ...users.map((u) => ({
+                label: `${u.name} ${u.surname}`.trim() || u.email,
+                value: u.id,
+              })),
+            ]}
+            menuPosition="fixed"
+          />
+        </div>
+        <Switcher
+          active={view}
+          elements={[
+            { icon: "List", id: "list" },
+            { icon: "Calendar", id: "calendar" },
+          ]}
+          onChange={(id) => {
+            if (id === "calendar" && filterUserId === "all" && users[0]) {
+              setFilterUserId(users[0].id);
+            }
+            setView(id as view);
+          }}
+        />
       </div>
       <Spacer size={8} />
       <Panel>
@@ -68,53 +98,52 @@ export const OrganizationRegistrationsPanel: FC<{
           <Typography variant="p-s-r">Caricamento timbrature...</Typography>
         )}
         {!!orgRegistrations?.length ? (
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead>
-                <tr>
-                  <th style={{ textAlign: "left", padding: 8 }}>Utente</th>
-                  <th style={{ textAlign: "left", padding: 8 }}>Data</th>
-                  <th style={{ textAlign: "left", padding: 8 }}>Ora</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orgRegistrations
-                  .filter((r) => (filterUserId === "all" ? true : r.userId === filterUserId))
-                  .sort((a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf())
-                  .map((r) => {
-                    const u = users.find((u) => u.id === r.userId);
-                    return (
-                      <tr key={r.id} style={{ borderTop: "1px solid #e2e8f0" }}>
-                        <td style={{ padding: 8 }}>
-                          <Typography variant="p-s-r" color="#0f172a">
-                            {u ? `${u.name} ${u.surname}`.trim() || u.email : r.userId}
-                          </Typography>
-                        </td>
-                        <td style={{ padding: 8 }}>
-                          <Typography variant="p-s-r" color="#64748b">
-                            {dayjs(r.date).format("DD/MM/YYYY")}
-                          </Typography>
-                        </td>
-                        <td style={{ padding: 8 }}>
-                          <Typography variant="p-s-r" color="#64748b">
-                            {dayjs(r.date).format("HH:mm")}
-                          </Typography>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-          </div>
+          <>
+            {view === "list" && (
+              <Table
+                headers={["Utente", "Data", "Ora"]}
+                values={orgRegistrationsToShow?.map((r) => {
+                  const u = users.find((u) => u.id === r.userId);
+                  return [
+                    <Typography variant="p-s-r" color="#0f172a" ellipsis>
+                      {u
+                        ? `${u.name} ${u.surname}`.trim() || u.email
+                        : r.userId}
+                    </Typography>,
+                    <Typography variant="p-s-r" color="#64748b">
+                      {dayjs(r.date).format("DD/MM/YYYY")}
+                    </Typography>,
+                    <Typography variant="p-s-r" color="#64748b">
+                      {dayjs(r.date).format("HH:mm")}
+                    </Typography>,
+                  ];
+                })}
+                maxWidth="500px"
+                padding="4px 24px"
+              />
+            )}
+            {view === "calendar" && (
+              <Calendar registrations={orgRegistrationsToShow} />
+            )}
+          </>
         ) : (
-          <Typography variant="p-s-r" color="lightgray">Nessuna timbratura</Typography>
+          <Typography variant="p-s-r" color="lightgray">
+            Nessuna timbratura
+          </Typography>
         )}
       </Panel>
 
-      <Modal visible={isAddRegOpen} onClose={() => setIsAddRegOpen(false)} title="Aggiungi timbratura">
+      <Modal
+        visible={isAddRegOpen}
+        onClose={() => setIsAddRegOpen(false)}
+        title="Aggiungi timbratura"
+      >
         <Formik
           enableReinitialize
-          initialValues={{ userId: "", datetime: dayjs().format("YYYY-MM-DDTHH:mm") }}
+          initialValues={{
+            userId: "",
+            datetime: dayjs().format("YYYY-MM-DDTHH:mm"),
+          }}
           onSubmit={async (values, { setSubmitting }) => {
             try {
               const payload: RegistrationApi = {
@@ -123,7 +152,11 @@ export const OrganizationRegistrationsPanel: FC<{
                 date: dayjs(values.datetime).toISOString(),
                 user_id: values.userId as unknown as string,
               } as RegistrationApi;
-              await axios<RegistrationApi>("/api/registrations", "POST", payload);
+              await axios<RegistrationApi>(
+                "/api/registrations",
+                "POST",
+                payload
+              );
               setIsAddRegOpen(false);
               showToast("success", "Timbratura aggiunta");
             } catch {
@@ -147,11 +180,20 @@ export const OrganizationRegistrationsPanel: FC<{
                   isRequired
                   menuPosition="fixed"
                 />
-                <InputForm name="datetime" title="Data e ora" placeholder="" isRequired />
+                <InputForm
+                  name="datetime"
+                  title="Data e ora"
+                  placeholder=""
+                  isRequired
+                />
               </div>
               <Spacer size={16} />
               <div style={{ display: "flex", justifyContent: "end", gap: 8 }}>
-                <Button variant="secondary" type="button" onClick={() => setIsAddRegOpen(false)}>
+                <Button
+                  variant="secondary"
+                  type="button"
+                  onClick={() => setIsAddRegOpen(false)}
+                >
                   Annulla
                 </Button>
                 <Button type="submit">Salva</Button>
@@ -163,5 +205,3 @@ export const OrganizationRegistrationsPanel: FC<{
     </>
   );
 };
-
-

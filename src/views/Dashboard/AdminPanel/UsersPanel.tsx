@@ -2,6 +2,7 @@ import { Button } from "@/components/Dumb/Button";
 import { Modal } from "@/components/Dumb/Modal";
 import { Panel } from "@/components/Dumb/Panel";
 import { Spacer } from "@/components/Dumb/Spacer";
+import { Table } from "@/components/Dumb/Table";
 import { Typography } from "@/components/Dumb/Typography";
 import { useUsers } from "@/hooks/api/useUsers";
 import { useAxios } from "@/hooks/useAxios";
@@ -96,51 +97,32 @@ export const UsersPanel = ({
           </Typography>
         )}
         {!!users?.length ? (
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead>
-                <tr>
-                  <th style={{ textAlign: "left", padding: 8 }}>Nome</th>
-                  <th style={{ textAlign: "left", padding: 8 }}>Cognome</th>
-                  <th style={{ textAlign: "left", padding: 8 }}>Email</th>
-                  <th style={{ textAlign: "left", padding: 8 }}>Creato il</th>
-                  <th style={{ textAlign: "left", padding: 8 }}>Azioni</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((u) => (
-                  <tr key={u.id} style={{ borderTop: "1px solid #e2e8f0" }}>
-                    <td style={{ padding: 8 }}>{u.name}</td>
-                    <td style={{ padding: 8 }}>{u.surname}</td>
-                    <td style={{ padding: 8 }}>{u.email}</td>
-                    <td style={{ padding: 8 }}>
-                      <Typography variant="p-s-r" color="#64748b">
-                        {new Date(u.createdAt).toLocaleDateString()}
-                      </Typography>
-                    </td>
-                    <td style={{ padding: 8, height: 60 }}>
-                      {u.id !== organization.adminId && (
-                        <div style={{ display: "flex", gap: 8 }}>
-                          <Button
-                            variant="tertiary"
-                            onClick={() => openEdit(u.id)}
-                          >
-                            Modifica
-                          </Button>
-                          <Button
-                            variant="distructive"
-                            onClick={() => setUserToDeleteId(u.id)}
-                          >
-                            Elimina
-                          </Button>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Table
+            headers={["Nome", "Cognome", "Email", "Creato il", "Azioni"]}
+            values={users.map((u) => [
+              <Typography variant="p-s-r">{u.name}</Typography>,
+              <Typography variant="p-s-r">{u.surname}</Typography>,
+              <Typography variant="p-s-r">{u.email}</Typography>,
+              <Typography variant="p-s-r" color="#64748b">
+                {new Date(u.createdAt).toLocaleDateString()}
+              </Typography>,
+              <>
+                {u.id !== organization.adminId && (
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <Button variant="tertiary" onClick={() => openEdit(u.id)}>
+                      Modifica
+                    </Button>
+                    <Button
+                      variant="distructive"
+                      onClick={() => setUserToDeleteId(u.id)}
+                    >
+                      Elimina
+                    </Button>
+                  </div>
+                )}
+              </>,
+            ])}
+          />
         ) : (
           !usersLoading && (
             <Typography variant="p-s-r" color="lightgray">
