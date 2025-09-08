@@ -458,18 +458,67 @@ export const OrganizationRegistrationsPanel: FC<{
               }
 
               if (values.format === "csv") {
-                const csvContent = [
-                  "Utente,Data,Ora",
-                  ...filteredRegistrations.map((r) => {
-                    const u = users.find((u) => u.id === r.userId);
-                    const userName = u
-                      ? `${u.name} ${u.surname}`.trim() || u.email
-                      : r.userId;
-                    const date = dayjs(r.date).format("DD/MM/YYYY");
-                    const time = dayjs(r.date).format("HH:mm");
-                    return `"${userName}","${date}","${time}"`;
-                  }),
-                ].join("\n");
+                const groupedByUser = filteredRegistrations.reduce(
+                  (acc, reg) => {
+                    const user = users.find((u) => u.id === reg.userId);
+                    const userName = user
+                      ? `${user.name} ${user.surname}`.trim() || user.email
+                      : reg.userId;
+
+                    if (!acc[userName]) {
+                      acc[userName] = {};
+                    }
+
+                    const dateKey = dayjs(reg.date).format("YYYY-MM-DD");
+                    if (!acc[userName][dateKey]) {
+                      acc[userName][dateKey] = [];
+                    }
+
+                    acc[userName][dateKey].push(reg);
+                    return acc;
+                  },
+                  {} as Record<
+                    string,
+                    Record<string, typeof filteredRegistrations>
+                  >
+                );
+
+                const csvRows = ["Utente,Data,Entrata,Uscita"];
+
+                Object.keys(groupedByUser)
+                  .sort()
+                  .forEach((userName) => {
+                    Object.keys(groupedByUser[userName])
+                      .sort()
+                      .forEach((dateKey) => {
+                        const dayRegistrations = groupedByUser[userName][
+                          dateKey
+                        ].sort(
+                          (a, b) =>
+                            dayjs(a.date).valueOf() - dayjs(b.date).valueOf()
+                        );
+
+                        const formattedDate =
+                          dayjs(dateKey).format("DD/MM/YYYY");
+
+                        for (let i = 0; i < dayRegistrations.length; i += 2) {
+                          const entryTime = dayRegistrations[i]
+                            ? dayjs(dayRegistrations[i].date).format("HH:mm")
+                            : "";
+                          const exitTime = dayRegistrations[i + 1]
+                            ? dayjs(dayRegistrations[i + 1].date).format(
+                                "HH:mm"
+                              )
+                            : "";
+
+                          csvRows.push(
+                            `"${userName}","${formattedDate}","${entryTime}","${exitTime}"`
+                          );
+                        }
+                      });
+                  });
+
+                const csvContent = csvRows.join("\n");
 
                 const blob = new Blob([csvContent], {
                   type: "text/csv;charset=utf-8;",
@@ -483,21 +532,79 @@ export const OrganizationRegistrationsPanel: FC<{
                 )}.csv`;
                 link.click();
               } else {
-                const jsonContent = JSON.stringify(
-                  filteredRegistrations.map((r) => {
-                    const u = users.find((u) => u.id === r.userId);
-                    return {
-                      utente: u
-                        ? `${u.name} ${u.surname}`.trim() || u.email
-                        : r.userId,
-                      data: dayjs(r.date).format("DD/MM/YYYY"),
-                      ora: dayjs(r.date).format("HH:mm"),
-                      timestamp: r.date,
-                    };
-                  }),
-                  null,
-                  2
+                const groupedByUser = filteredRegistrations.reduce(
+                  (acc, reg) => {
+                    const user = users.find((u) => u.id === reg.userId);
+                    const userName = user
+                      ? `${user.name} ${user.surname}`.trim() || user.email
+                      : reg.userId;
+
+                    if (!acc[userName]) {
+                      acc[userName] = {};
+                    }
+
+                    const dateKey = dayjs(reg.date).format("YYYY-MM-DD");
+                    if (!acc[userName][dateKey]) {
+                      acc[userName][dateKey] = [];
+                    }
+
+                    acc[userName][dateKey].push(reg);
+                    return acc;
+                  },
+                  {} as Record<
+                    string,
+                    Record<string, typeof filteredRegistrations>
+                  >
                 );
+
+                const jsonData: Array<{
+                  utente: string;
+                  data: string;
+                  entrata: string;
+                  uscita: string;
+                  timestamp_entrata?: string;
+                  timestamp_uscita?: string;
+                }> = [];
+
+                Object.keys(groupedByUser)
+                  .sort()
+                  .forEach((userName) => {
+                    Object.keys(groupedByUser[userName])
+                      .sort()
+                      .forEach((dateKey) => {
+                        const dayRegistrations = groupedByUser[userName][
+                          dateKey
+                        ].sort(
+                          (a, b) =>
+                            dayjs(a.date).valueOf() - dayjs(b.date).valueOf()
+                        );
+
+                        const formattedDate =
+                          dayjs(dateKey).format("DD/MM/YYYY");
+
+                        for (let i = 0; i < dayRegistrations.length; i += 2) {
+                          const entryTime = dayRegistrations[i]
+                            ? dayjs(dayRegistrations[i].date).format("HH:mm")
+                            : "";
+                          const exitTime = dayRegistrations[i + 1]
+                            ? dayjs(dayRegistrations[i + 1].date).format(
+                                "HH:mm"
+                              )
+                            : "";
+
+                          jsonData.push({
+                            utente: userName,
+                            data: formattedDate,
+                            entrata: entryTime,
+                            uscita: exitTime,
+                            timestamp_entrata: dayRegistrations[i]?.date,
+                            timestamp_uscita: dayRegistrations[i + 1]?.date,
+                          });
+                        }
+                      });
+                  });
+
+                const jsonContent = JSON.stringify(jsonData, null, 2);
 
                 const blob = new Blob([jsonContent], {
                   type: "application/json",
