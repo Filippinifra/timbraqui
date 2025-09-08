@@ -7,6 +7,7 @@ import { useUserInfo } from "@/context/UserInfoContext";
 import { useOrganization } from "@/hooks/api/useOrganization";
 import { BUSINESS_EMAIL, BUSINESS_NAME } from "@/utils/businessInfo";
 import { colors } from "@/utils/colors";
+import { zIndexValues } from "@/utils/zIndex";
 import { SignOutButton } from "@clerk/nextjs";
 import { AdminPanel } from "./AdminPanel";
 import { UserPanel } from "./UserPanel";
@@ -55,6 +56,7 @@ export const DashboardView = () => {
           backgroundColor: "#ededed",
           position: "sticky",
           top: 0,
+          zIndex: zIndexValues.header,
         }}
       >
         <div

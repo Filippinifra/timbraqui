@@ -2,6 +2,7 @@ import { IconButton } from "@/components/Dumb/IconButton";
 import { Spacer } from "@/components/Dumb/Spacer";
 import { Tooltip } from "@/components/Dumb/Tooltip";
 import { Typography } from "@/components/Dumb/Typography";
+import { colors } from "@/utils/colors";
 import dayjs from "dayjs";
 import "dayjs/locale/it";
 import { FC, useMemo, useState } from "react";
@@ -97,7 +98,7 @@ export const Calendar: FC<CalendarProps> = ({ registrations }) => {
             display: "grid",
             gridTemplateColumns: "repeat(7, 1fr)",
             gap: 6,
-            maxWidth: 500,
+            maxWidth: 680,
           }}
         >
           {weekdayHeaders.map((wd, idx) => (
@@ -111,15 +112,33 @@ export const Calendar: FC<CalendarProps> = ({ registrations }) => {
             const times = c.dateKey
               ? registrationsByDay.get(c.dateKey) || []
               : [];
+
+            const timesInOut = times.reduce((acc, _, i) => {
+              if (i % 2 === 0)
+                acc.push(times.slice(i, i + 2) as [string, string]);
+              return acc;
+            }, [] as [string, string][]);
+
             const isHit = Boolean(times.length);
+
+            const timesOdd = times.length % 2 !== 0;
+
             return (
               <div
                 key={idx}
                 style={{
                   minHeight: 90,
                   borderRadius: 8,
-                  background: isHit ? "#eff6ff" : "#f8fafc",
-                  border: isHit ? "1px solid #93c5fd" : "1px solid #e2e8f0",
+                  background: timesOdd
+                    ? colors.warningLight
+                    : isHit
+                    ? "#eff6ff"
+                    : "#f8fafc",
+                  border: timesOdd
+                    ? `1px solid ${colors.warning}`
+                    : isHit
+                    ? "1px solid #93c5fd"
+                    : "1px solid #e2e8f0",
                   padding: 6,
                   display: "flex",
                   flexDirection: "column",
@@ -139,7 +158,7 @@ export const Calendar: FC<CalendarProps> = ({ registrations }) => {
                     {c.label}
                   </Typography>
                 </div>
-                {!!times.length && (
+                {!!timesInOut.length && (
                   <div
                     style={{
                       display: "flex",
@@ -148,29 +167,33 @@ export const Calendar: FC<CalendarProps> = ({ registrations }) => {
                       marginTop: 4,
                     }}
                   >
-                    {times.slice(0, 3).map((t, i) => (
-                      <Typography key={i} variant="p-xs-r" color="#2563eb">
-                        {t}
+                    {timesInOut.slice(0, 3).map((t, i) => (
+                      <Typography
+                        key={i}
+                        variant="p-xs-r"
+                        color={!t[1] ? colors.error : "#2563eb"}
+                      >
+                        {`${t[0]} → ${t[1] || ""}`}
                       </Typography>
                     ))}
                     <Tooltip
                       content={
                         <div>
-                          {times.slice(3).map((t, i) => (
+                          {timesInOut.slice(3).map((t, i) => (
                             <Typography
                               key={i}
                               variant="p-xs-r"
-                              color="#2563eb"
+                              color={!t[1] ? colors.error : "#2563eb"}
                             >
-                              {t}
+                              {`${t[0]} → ${t[1] || ""}`}
                             </Typography>
                           ))}
                         </div>
                       }
                     >
-                      {times.length > 3 && (
+                      {timesInOut.length > 3 && (
                         <Typography variant="p-xs-r" color="#64748b">
-                          +{times.length - 3}
+                          +{timesInOut.length - 3}
                         </Typography>
                       )}
                     </Tooltip>

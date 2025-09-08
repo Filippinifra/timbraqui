@@ -1,8 +1,10 @@
 import { Button } from "@/components/Dumb/Button";
 import { DatePicker } from "@/components/Dumb/DatePicker";
+import { Divider } from "@/components/Dumb/Divider";
 import { Dropdown } from "@/components/Dumb/Dropdown";
 import { DropdownForm } from "@/components/Dumb/FormElements/DropdownForm";
 import { InputForm } from "@/components/Dumb/FormElements/InputForm";
+import { IconButton } from "@/components/Dumb/IconButton";
 import { Modal } from "@/components/Dumb/Modal";
 import { Panel } from "@/components/Dumb/Panel";
 import { Spacer } from "@/components/Dumb/Spacer";
@@ -12,9 +14,12 @@ import { Typography } from "@/components/Dumb/Typography";
 import { useToast } from "@/context/ToastContext";
 import { useOrganizationRegistrations } from "@/hooks/api/useRegistrations";
 import { useAxios } from "@/hooks/useAxios";
+import { toRegistrationApi } from "@/mappers/toRegistration";
 import { Organization } from "@/types/Organization";
 import { RegistrationApi } from "@/types/Registration";
 import { User } from "@/types/User";
+import { colors } from "@/utils/colors";
+import { groupRegistrationsByDay } from "@/utils/registrations";
 import dayjs from "dayjs";
 import { Form, Formik } from "formik";
 import { FC, useState } from "react";
@@ -22,7 +27,7 @@ import { v4 } from "uuid";
 import * as Yup from "yup";
 import { Calendar } from "../UserPanel/Calendar";
 
-type view = "list" | "calendar";
+type view = "list" | "calendar" | "listGrouped";
 
 export const OrganizationRegistrationsPanel: FC<{
   organization: Organization;
@@ -33,7 +38,10 @@ export const OrganizationRegistrationsPanel: FC<{
   const [isAddRegOpen, setIsAddRegOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [filterUserId, setFilterUserId] = useState<string | "all">("all");
-  const [view, setView] = useState<view>("list");
+  const [view, setView] = useState<view>("listGrouped");
+  const [registrationIdToRemove, setRegistrationIdToRemove] = useState<
+    string | null
+  >(null);
 
   const {
     registration: orgRegistrations,
@@ -43,10 +51,63 @@ export const OrganizationRegistrationsPanel: FC<{
 
   const orgRegistrationsToShow = orgRegistrations
     ?.filter((r) => (filterUserId === "all" ? true : r.userId === filterUserId))
-    .sort((a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf());
+    .sort((a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf());
+
+  const orgRegistrationsByDayToShowGrouped = groupRegistrationsByDay(
+    orgRegistrationsToShow || []
+  );
+
+  const regToRemove = orgRegistrations?.find(
+    (r) => r.id === registrationIdToRemove
+  );
+  const onDeleteRegistration = async () => {
+    if (regToRemove) {
+      try {
+        await axios("/api/registrations", "DELETE", {
+          id: registrationIdToRemove,
+        });
+        setRegistrationIdToRemove(null);
+        refreshRegistrations(toRegistrationApi(regToRemove), "remove");
+        showToast("success");
+      } catch {
+        showToast("error");
+      }
+    }
+  };
 
   return (
     <>
+      <Modal
+        visible={Boolean(registrationIdToRemove)}
+        onClose={() => setRegistrationIdToRemove(null)}
+        title={"Conferma eliminazione"}
+      >
+        <Typography variant="p-m-r">
+          {`Sei sicuro di voler eliminare la registrazione di ${
+            users?.find((u) => u.id === regToRemove?.userId)?.name ||
+            "questo utente"
+          } del ${dayjs(regToRemove?.date).format(
+            "D MMMM YYYY (dddd)"
+          )} delle ore ${dayjs(regToRemove?.date).format("HH:mm")}?`}
+        </Typography>
+        <Spacer size={16} />
+        <div style={{ display: "flex", justifyContent: "end", gap: 8 }}>
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={() => setRegistrationIdToRemove(null)}
+          >
+            Annulla
+          </Button>
+          <Button
+            variant="distructive"
+            type="button"
+            onClick={onDeleteRegistration}
+          >
+            Elimina
+          </Button>
+        </div>
+      </Modal>
       <div
         style={{
           display: "flex",
@@ -108,6 +169,7 @@ export const OrganizationRegistrationsPanel: FC<{
         <Switcher
           active={view}
           elements={[
+            { icon: "ListCheck", id: "listGrouped" },
             { icon: "List", id: "list" },
             { icon: "Calendar", id: "calendar" },
           ]}
@@ -121,52 +183,135 @@ export const OrganizationRegistrationsPanel: FC<{
       </div>
       <Spacer size={8} />
       <Panel>
-        {registrationLoading && (
-          <Typography variant="p-s-r">Caricamento timbrature...</Typography>
-        )}
-        {!!orgRegistrations?.length ? (
-          <>
-            {view === "list" && (
-              <Table
-                headers={["Utente", "Data", "Ora"]}
-                values={orgRegistrationsToShow?.map((r) => {
-                  const u = users.find((u) => u.id === r.userId);
-                  return [
-                    <Typography
-                      variant="p-s-r"
-                      color="#0f172a"
-                      ellipsis
-                      key="cell-name"
-                    >
-                      {u
-                        ? `${u.name} ${u.surname}`.trim() || u.email
-                        : r.userId}
-                    </Typography>,
-                    <Typography variant="p-s-r" color="#64748b" key="cell-date">
-                      {dayjs(r.date).format("DD/MM/YYYY")}
-                    </Typography>,
-                    <Typography
-                      variant="p-s-r"
-                      color="#64748b"
-                      key="cell-hours"
-                    >
-                      {dayjs(r.date).format("HH:mm")}
-                    </Typography>,
-                  ];
-                })}
-                maxWidth="500px"
-                padding="4px 24px"
-              />
-            )}
-            {view === "calendar" && (
-              <Calendar registrations={orgRegistrationsToShow} />
-            )}
-          </>
-        ) : (
-          <Typography variant="p-s-r" color="lightgray">
-            Nessuna timbratura
-          </Typography>
-        )}
+        <div style={{ minHeight: 600 }}>
+          {registrationLoading && (
+            <Typography variant="p-s-r">Caricamento timbrature...</Typography>
+          )}
+          {!!orgRegistrations?.length ? (
+            <>
+              {view === "listGrouped" && (
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 48 }}
+                >
+                  {orgRegistrationsByDayToShowGrouped.map(
+                    ({ day, items: registrations }, index) => (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 16,
+                        }}
+                        key={day}
+                      >
+                        <Typography variant="p-m-sb">
+                          {dayjs(day).format("D MMMM YYYY (dddd)")}
+                        </Typography>
+                        <Table
+                          maxWidth="400px"
+                          headers={["Utente", "Ora entrata", "Ora uscita"]}
+                          values={registrations?.reverse().map((r) => {
+                            const u = users.find((u) => u.id === r.userId);
+
+                            return [
+                              <div style={{ width: 120 }} key="cell-name">
+                                <Typography
+                                  variant="p-s-r"
+                                  color={r.out ? "#0f172a" : colors.error}
+                                  ellipsis
+                                >
+                                  {u
+                                    ? `${u.name} ${u.surname}`.trim() || u.email
+                                    : r.userId}
+                                </Typography>
+                              </div>,
+                              <Typography
+                                variant="p-s-r"
+                                color={r.out ? "#64748b" : colors.error}
+                                key="cell-in"
+                              >
+                                {r.in}
+                              </Typography>,
+                              <Typography
+                                variant="p-s-r"
+                                color={r.out ? "#64748b" : colors.error}
+                                key="cell-out"
+                              >
+                                {r.out || "-"}
+                              </Typography>,
+                            ];
+                          })}
+                          padding="4px 24px"
+                        />
+                        {index !==
+                        orgRegistrationsByDayToShowGrouped.length - 1 ? (
+                          <div>
+                            <Spacer size={32} />
+                            <Divider />
+                          </div>
+                        ) : null}
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
+              {view === "list" && (
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 48 }}
+                >
+                  <Table
+                    headers={["Utente", "Data", "Ora", "Azioni"]}
+                    values={orgRegistrationsToShow?.reverse().map((r) => {
+                      const u = users.find((u) => u.id === r.userId);
+
+                      return [
+                        <div style={{ width: 120 }} key="cell-name">
+                          <Typography
+                            variant="p-s-r"
+                            color={"#0f172a"}
+                            ellipsis
+                          >
+                            {u
+                              ? `${u.name} ${u.surname}`.trim() || u.email
+                              : r.userId}
+                          </Typography>
+                        </div>,
+                        <Typography
+                          variant="p-s-r"
+                          color={"#64748b"}
+                          key="cell-date"
+                        >
+                          {dayjs(r.date).format("D MMMM YYYY (ddd)")}
+                        </Typography>,
+                        <Typography
+                          variant="p-s-r"
+                          color={"#64748b"}
+                          key="cell-hour"
+                        >
+                          {dayjs(r.date).format("HH:mm")}
+                        </Typography>,
+                        <IconButton
+                          icon="Trash2"
+                          onClick={() => {
+                            setRegistrationIdToRemove(r.id);
+                          }}
+                          key="cell-trash"
+                        />,
+                      ];
+                    })}
+                    padding="4px 24px"
+                  />
+                </div>
+              )}
+              {view === "calendar" && (
+                <Calendar registrations={orgRegistrationsToShow} />
+              )}
+            </>
+          ) : (
+            <Typography variant="p-s-r" color="lightgray">
+              Nessuna timbratura
+            </Typography>
+          )}
+        </div>
       </Panel>
 
       <Modal

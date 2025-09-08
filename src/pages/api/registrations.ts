@@ -45,6 +45,15 @@ export default withApiProtection((req, res) =>
         res,
         async () => await supabase.from("registrations").insert(body)
       );
+    } else if (req.method === "DELETE") {
+      return supabaseLogicReturnApi(
+        res,
+        async () =>
+          await supabase
+            .from("registrations")
+            .delete()
+            .eq("id", req.body.id as string)
+      );
     }
   })
 );
