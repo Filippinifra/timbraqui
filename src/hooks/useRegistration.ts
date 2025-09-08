@@ -4,7 +4,6 @@ import { useAxios } from "@/hooks/useAxios";
 import { usePosition } from "@/hooks/usePosition";
 import { Organization } from "@/types/Organization";
 import { Registration, RegistrationApi } from "@/types/Registration";
-import { calculateDistance } from "@/utils/geolocation";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { v4 } from "uuid";
@@ -24,11 +23,16 @@ export const useRegistration = (
 
   const confirmRegistration = async () => {
     try {
-      const registrationToRegister: RegistrationApi = {
+      const registrationToRegister: RegistrationApi & {
+        userLat?: number;
+        userLng?: number;
+      } = {
         created_at: dayjs().toISOString(),
         date: dayjs().toISOString(),
         id: v4(),
         user_id: id,
+        userLat: pos?.lat,
+        userLng: pos?.lng,
       };
 
       await axios<RegistrationApi>(
@@ -39,8 +43,12 @@ export const useRegistration = (
 
       showToast("success", "Timbratura registrata");
       onRegister(registrationToRegister);
-    } catch {
-      showToast("error");
+    } catch (error: any) {
+      if (error.response?.data?.error) {
+        showToast("error", error.response.data.error);
+      } else {
+        showToast("error");
+      }
     }
   };
 
@@ -73,26 +81,8 @@ export const useRegistration = (
       );
     } else if (!pos) {
       showToast("error", "Posizione non attiva, cambia browser e riprova.");
-    } else if (organization.place) {
-      const distance = calculateDistance(
-        organization.place.lat,
-        organization.place.lng,
-        pos.lat,
-        pos.lng
-      );
-
-      const isNear = distance <= 100;
-
-      if (isNear) {
-        await confirmRegistration();
-      } else {
-        showToast("error", "Sei lontano dalla posizione di timbratura");
-      }
     } else {
-      showToast(
-        "error",
-        "Nessuna posizione di timbratura registrata per la tua organizzazione."
-      );
+      await confirmRegistration();
     }
 
     setLoading(false);
