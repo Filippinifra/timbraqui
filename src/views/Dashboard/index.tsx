@@ -46,7 +46,7 @@ export const DashboardView = () => {
     return <div>{"Errore nel caricamento dell'organizzazione."}</div>;
   if (!organization) return <div>Organizzazione non trovata.</div>;
 
-  const isAdmin = user.id === organization.adminId;
+  const isAdmin = organization.adminId.some((id) => id === user.id);
 
   return (
     <div>

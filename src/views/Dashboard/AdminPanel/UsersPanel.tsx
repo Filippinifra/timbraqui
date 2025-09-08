@@ -160,7 +160,7 @@ export const UsersPanel = ({
                     {u.active ? "Attivo" : "Non attivo"}
                   </Typography>,
                   <div key="cell-buttons" style={{ minHeight: 38 }}>
-                    {u.id !== organization.adminId && (
+                    {!organization.adminId.some((e) => e === u.id) && (
                       <div style={{ display: "flex", gap: 8 }}>
                         <Button
                           variant="tertiary"

@@ -5,7 +5,7 @@ export type Organization = {
   createdAt: string;
   address: string;
   name: string;
-  adminId: string;
+  adminId: string[];
   place: { lat: number; lng: number } | null;
 };
 

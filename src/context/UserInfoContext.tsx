@@ -11,6 +11,7 @@ const defaultUser: User = {
   name: "",
   orgId: "",
   surname: "",
+  active: true,
 };
 
 export const UserInfoContext = createContext<{
