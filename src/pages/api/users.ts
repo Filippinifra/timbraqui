@@ -1,5 +1,6 @@
 import {
   checkSupabaseAndMethodExist,
+  supabaseCheckError,
   supabaseLogicReturnApi,
   withApiProtection,
 } from "@/auth/api";
@@ -34,6 +35,29 @@ export default withApiProtection((req, res) =>
     if (req.method === "POST") {
       const body = req.body as UserApi;
 
+      const { data: organizations, error: organizationErr } = await supabase
+        .from("organizations")
+        .select("max_users_active, admin_id")
+        .eq("id", body.org_id);
+      supabaseCheckError(res, organizationErr);
+
+      const { data: users, error: usersErr } = await supabase
+        .from("users")
+        .select("id")
+        .eq("active", true)
+        .eq("org_id", body.org_id);
+      supabaseCheckError(res, usersErr);
+
+      if (
+        body.active &&
+        users?.length &&
+        organizations &&
+        users.length - organizations[0].admin_id.length >=
+          organizations[0].max_users_active
+      ) {
+        return res.status(400).json({ error: "Max users active reached" });
+      }
+
       return supabaseLogicReturnApi(
         res,
         async () => await supabase.from("users").insert(body)
@@ -42,6 +66,29 @@ export default withApiProtection((req, res) =>
 
     if (req.method === "PUT") {
       const body = req.body as UserApi;
+
+      const { data: organizations, error: organizationErr } = await supabase
+        .from("organizations")
+        .select("max_users_active, admin_id")
+        .eq("id", body.org_id);
+      supabaseCheckError(res, organizationErr);
+
+      const { data: users, error: usersErr } = await supabase
+        .from("users")
+        .select("id")
+        .eq("active", true)
+        .eq("org_id", body.org_id);
+      supabaseCheckError(res, usersErr);
+
+      if (
+        body.active &&
+        users?.length &&
+        organizations &&
+        users.length - organizations[0].admin_id.length >=
+          organizations[0].max_users_active
+      ) {
+        return res.status(400).json({ error: "Max users active reached" });
+      }
 
       return supabaseLogicReturnApi(
         res,
@@ -55,7 +102,10 @@ export default withApiProtection((req, res) =>
       return supabaseLogicReturnApi(
         res,
         async () =>
-          await supabase.from("users").update({ deleted: true }).eq("id", id)
+          await supabase
+            .from("users")
+            .update({ deleted: true, active: false })
+            .eq("id", id)
       );
     }
   })

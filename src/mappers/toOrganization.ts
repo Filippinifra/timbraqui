@@ -7,6 +7,8 @@ export const toOrganization = (o: OrganizationApi): Organization => ({
   id: o.id,
   name: o.name,
   place: o.lat && o.lng ? { lat: o.lat, lng: o.lng } : null,
+  maxMeterRegistrations: o.max_meter_registrations,
+  maxUsersActive: o.max_users_active,
 });
 
 export const toOrganizationApi = (o: Organization): OrganizationApi => ({
@@ -17,4 +19,6 @@ export const toOrganizationApi = (o: Organization): OrganizationApi => ({
   name: o.name,
   lat: o.place?.lat || null,
   lng: o.place?.lng || null,
+  max_meter_registrations: o.maxMeterRegistrations,
+  max_users_active: o.maxUsersActive,
 });

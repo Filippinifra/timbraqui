@@ -7,6 +7,8 @@ export type Organization = {
   name: string;
   adminId: string[];
   place: { lat: number; lng: number } | null;
+  maxMeterRegistrations: number;
+  maxUsersActive: number;
 };
 
 export type OrganizationApi = Tables<"organizations">;

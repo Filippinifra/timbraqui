@@ -47,6 +47,8 @@ export type Database = {
           id: string
           lat: number | null
           lng: number | null
+          max_meter_registrations: number
+          max_users_active: number
           name: string
         }
         Insert: {
@@ -56,6 +58,8 @@ export type Database = {
           id: string
           lat?: number | null
           lng?: number | null
+          max_meter_registrations?: number
+          max_users_active?: number
           name: string
         }
         Update: {
@@ -65,6 +69,8 @@ export type Database = {
           id?: string
           lat?: number | null
           lng?: number | null
+          max_meter_registrations?: number
+          max_users_active?: number
           name?: string
         }
         Relationships: []
