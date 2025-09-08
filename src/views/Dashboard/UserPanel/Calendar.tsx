@@ -97,7 +97,7 @@ export const Calendar: FC<CalendarProps> = ({ registrations }) => {
             display: "grid",
             gridTemplateColumns: "repeat(7, 1fr)",
             gap: 6,
-            maxWidth: 420,
+            maxWidth: 500,
           }}
         >
           {weekdayHeaders.map((wd, idx) => (
@@ -116,7 +116,7 @@ export const Calendar: FC<CalendarProps> = ({ registrations }) => {
               <div
                 key={idx}
                 style={{
-                  minHeight: 58,
+                  minHeight: 90,
                   borderRadius: 8,
                   background: isHit ? "#eff6ff" : "#f8fafc",
                   border: isHit ? "1px solid #93c5fd" : "1px solid #e2e8f0",
@@ -180,14 +180,16 @@ export const Calendar: FC<CalendarProps> = ({ registrations }) => {
             );
           })}
         </div>
-        {!hasAnyThisMonth ? (
-          <>
-            <Spacer size={8} />
-            <Typography variant="p-s-r" color="lightgray">
-              Nessuna timbratura questo mese
-            </Typography>
-          </>
-        ) : null}
+        <div style={{ height: 18 }}>
+          {!hasAnyThisMonth ? (
+            <>
+              <Spacer size={8} />
+              <Typography variant="p-s-r" color="lightgray">
+                Nessuna timbratura questo mese
+              </Typography>
+            </>
+          ) : null}
+        </div>
       </div>
     </div>
   );

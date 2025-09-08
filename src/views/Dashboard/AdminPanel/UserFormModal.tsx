@@ -5,7 +5,7 @@ import { Spacer } from "@/components/Dumb/Spacer";
 import { useToast } from "@/context/ToastContext";
 import { useAxios } from "@/hooks/useAxios";
 import { Organization } from "@/types/Organization";
-import { UserApi } from "@/types/User";
+import { User, UserApi } from "@/types/User";
 import dayjs from "dayjs";
 import { Form, Formik } from "formik";
 import { FC, useMemo } from "react";
@@ -18,9 +18,7 @@ type Props = {
   mode: "add" | "edit";
   organization: Organization;
   selectedUserId: string | null;
-  users:
-    | { id: string; name: string; surname: string; email: string }[]
-    | undefined;
+  users: User[] | undefined;
   refreshUsers: () => Promise<any>;
 };
 
@@ -53,16 +51,17 @@ export const UserFormModal: FC<Props> = ({
     []
   );
 
-  const onSubmit = async (values: UserApi) => {
+  const onSubmit = async (values: Yup.InferType<typeof validationSchema>) => {
     try {
       if (mode === "add") {
         await axios<UserApi>("/api/users", "POST", {
           org_id: organization.id,
-          name: values.name,
+          name: values.name || "",
           surname: values.surname,
           email: values.email,
           created_at: dayjs().toISOString(),
           id: v4(),
+          active: true,
         });
         showToast("success", "Utente aggiunto con successo");
       } else if (mode === "edit" && selectedUserId) {
@@ -73,15 +72,18 @@ export const UserFormModal: FC<Props> = ({
           email: values.email,
           created_at: dayjs().toISOString(),
           org_id: organization.id,
+          active: true,
         });
         showToast("success", "Utente aggiornato con successo");
       }
       await refreshUsers();
       onClose();
-    } catch (error) {
+    } catch {
       showToast("error", "Errore nel salvataggio dell'utente");
     }
   };
+
+  const userSelected = users?.find((u) => u.id === selectedUserId);
 
   return (
     <Modal
@@ -95,10 +97,9 @@ export const UserFormModal: FC<Props> = ({
         initialValues={
           mode === "edit"
             ? {
-                name: users?.find((u) => u.id === selectedUserId)?.name || "",
-                surname:
-                  users?.find((u) => u.id === selectedUserId)?.surname || "",
-                email: users?.find((u) => u.id === selectedUserId)?.email || "",
+                name: userSelected?.name || "",
+                surname: userSelected?.surname || "",
+                email: userSelected?.email || "",
               }
             : initialValues
         }

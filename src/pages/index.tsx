@@ -1,5 +1,6 @@
 import { checkRouteReturnUser } from "@/auth/checkRouteReturnUserTranslations";
 import { useAuthData } from "@/context/AuthDataContext";
+import { BUSINESS_EMAIL, BUSINESS_NAME } from "@/utils/businessInfo";
 import { Routes } from "@/utils/routes";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
@@ -8,7 +9,7 @@ const features = [
   {
     icon: "🕒",
     title: "Timbratura Smart",
-    desc: "Registra ingressi e uscite in tempo reale, ovunque tu sia.",
+    desc: "Timbratura in tempo reale solo se sei in sede.",
   },
   {
     icon: "🔒",
@@ -22,8 +23,8 @@ const features = [
   },
   {
     icon: "📊",
-    title: "Reportistica Avanzata",
-    desc: "Scarica report dettagliati e monitora le presenze in un click.",
+    title: "Reportistica",
+    desc: "Scarica report e monitora le presenze in un click.",
   },
 ];
 
@@ -119,7 +120,7 @@ export default function Home() {
                 lineHeight: 1.1,
               }}
             >
-              TimbraQui
+              {BUSINESS_NAME}
             </h1>
             <h2
               style={{
@@ -166,7 +167,7 @@ export default function Home() {
                   "linear-gradient(90deg, #2563eb 60%, #60a5fa 100%)")
               }
             >
-              Prova Gratis
+              Entra ora
             </a>
           </div>
         </section>
@@ -192,8 +193,8 @@ export default function Home() {
                 borderRadius: 18,
                 boxShadow: "0 2px 16px rgba(30,41,59,0.07)",
                 padding: "2rem 1.5rem 1.5rem 1.5rem",
-                minWidth: 220,
-                maxWidth: 260,
+                minWidth: 300,
+                maxWidth: 300,
                 flex: "1 1 220px",
                 display: "flex",
                 flexDirection: "column",
@@ -237,14 +238,15 @@ export default function Home() {
           <div style={{ marginBottom: 8 }}>
             Hai domande?{" "}
             <a
-              href="mailto:info@timbraqui.it"
+              href={`mailto:${BUSINESS_EMAIL}`}
               style={{ color: "#2563eb", textDecoration: "underline" }}
             >
               Contattaci
             </a>
           </div>
           <div>
-            © {new Date().getFullYear()} TimbraQui. Tutti i diritti riservati.
+            © {new Date().getFullYear()} {BUSINESS_NAME}. Tutti i diritti
+            riservati.
           </div>
         </footer>
       </main>

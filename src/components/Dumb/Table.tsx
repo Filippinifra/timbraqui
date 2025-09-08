@@ -26,7 +26,7 @@ export const Table: FC<Props> = ({
         <thead>
           <tr>
             {headers.map((e) => (
-              <th style={{ textAlign: "left", padding }}>
+              <th style={{ textAlign: "left", padding }} key={`header-${e}`}>
                 <Typography variant="p-s-r">{e}</Typography>
               </th>
             ))}

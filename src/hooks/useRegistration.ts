@@ -59,14 +59,17 @@ export const useRegistration = (
       }
     }, undefined as undefined | Registration);
 
+    const minutesForNewRegistration = 30;
+
     const isLatestRegBefore1Min =
       latestRegistation &&
-      dayjs().diff(dayjs(latestRegistation.date), "minutes") < 1;
+      dayjs().diff(dayjs(latestRegistation.date), "minutes") <
+        minutesForNewRegistration;
 
     if (isLatestRegBefore1Min) {
       showToast(
         "error",
-        "Ultima timbratura meno di 1 minuto fa, devi aspettare almeno 1 minuto prima di timbrare di nuovo."
+        `Ultima timbratura meno di ${minutesForNewRegistration} minuti fa, devi aspettare almeno ${minutesForNewRegistration} minuti prima di timbrare di nuovo.`
       );
     } else if (!pos) {
       showToast("error", "Posizione non attiva, cambia browser e riprova.");

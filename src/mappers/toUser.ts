@@ -16,4 +16,5 @@ export const toUserApi = (u: User): UserApi => ({
   name: u.name,
   org_id: u.orgId,
   surname: u.surname,
+  active: true,
 });

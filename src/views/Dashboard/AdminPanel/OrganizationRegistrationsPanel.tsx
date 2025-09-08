@@ -47,8 +47,14 @@ export const OrganizationRegistrationsPanel: FC<{
 
   return (
     <>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <Typography variant="p-m-r">Timbrature utenti</Typography>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="h3">Timbrature utenti</Typography>
         <div style={{ display: "flex", gap: 8 }}>
           <Button
             onClick={() => setIsExportOpen(true)}
@@ -62,9 +68,15 @@ export const OrganizationRegistrationsPanel: FC<{
           </Button>
         </div>
       </div>
-      <Spacer size={8} />
+      <Spacer size={16} />
 
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "end",
+        }}
+      >
         <div style={{ minWidth: 200 }}>
           <Dropdown
             onChange={(v) => {
@@ -120,15 +132,24 @@ export const OrganizationRegistrationsPanel: FC<{
                 values={orgRegistrationsToShow?.map((r) => {
                   const u = users.find((u) => u.id === r.userId);
                   return [
-                    <Typography variant="p-s-r" color="#0f172a" ellipsis>
+                    <Typography
+                      variant="p-s-r"
+                      color="#0f172a"
+                      ellipsis
+                      key="cell-name"
+                    >
                       {u
                         ? `${u.name} ${u.surname}`.trim() || u.email
                         : r.userId}
                     </Typography>,
-                    <Typography variant="p-s-r" color="#64748b">
+                    <Typography variant="p-s-r" color="#64748b" key="cell-date">
                       {dayjs(r.date).format("DD/MM/YYYY")}
                     </Typography>,
-                    <Typography variant="p-s-r" color="#64748b">
+                    <Typography
+                      variant="p-s-r"
+                      color="#64748b"
+                      key="cell-hours"
+                    >
                       {dayjs(r.date).format("HH:mm")}
                     </Typography>,
                   ];
@@ -348,7 +369,7 @@ export const OrganizationRegistrationsPanel: FC<{
 
               showToast("success", "Esportazione completata");
               setIsExportOpen(false);
-            } catch (error) {
+            } catch {
               showToast("error", "Errore durante l'esportazione");
             } finally {
               setSubmitting(false);

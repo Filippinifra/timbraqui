@@ -31,6 +31,7 @@ export const Switcher: FC<Props> = ({ active, elements, onChange }) => {
               backgroundColor: isActive ? colors.primary : colors.primaryLight,
               borderRadius: 4,
             }}
+            key={`switcher-${id}`}
           >
             <Icon
               key={id}

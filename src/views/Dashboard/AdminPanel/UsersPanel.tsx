@@ -7,7 +7,7 @@ import { Typography } from "@/components/Dumb/Typography";
 import { useUsers } from "@/hooks/api/useUsers";
 import { useAxios } from "@/hooks/useAxios";
 import { Organization } from "@/types/Organization";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { UserFormModal } from "./UserFormModal";
 
 export const UsersPanel = ({
@@ -82,8 +82,14 @@ export const UsersPanel = ({
         refreshUsers={refreshUsers}
       />
 
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <Typography variant="p-m-r">Utenti</Typography>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="h3">Utenti</Typography>
         <Button onClick={openAdd} icon="Plus">
           Aggiungi utente
         </Button>
@@ -102,13 +108,19 @@ export const UsersPanel = ({
           <Table
             headers={["Nome", "Cognome", "Email", "Creato il", "Azioni"]}
             values={users.map((u) => [
-              <Typography variant="p-s-r">{u.name}</Typography>,
-              <Typography variant="p-s-r">{u.surname}</Typography>,
-              <Typography variant="p-s-r">{u.email}</Typography>,
-              <Typography variant="p-s-r" color="#64748b">
+              <Typography variant="p-s-r" key="cell-name">
+                {u.name}
+              </Typography>,
+              <Typography variant="p-s-r" key="cell-surname">
+                {u.surname}
+              </Typography>,
+              <Typography variant="p-s-r" key="cell-email">
+                {u.email}
+              </Typography>,
+              <Typography variant="p-s-r" color="#64748b" key="cell-created">
                 {new Date(u.createdAt).toLocaleDateString()}
               </Typography>,
-              <>
+              <Fragment key="cell-buttons">
                 {u.id !== organization.adminId && (
                   <div style={{ display: "flex", gap: 8 }}>
                     <Button variant="tertiary" onClick={() => openEdit(u.id)}>
@@ -122,7 +134,7 @@ export const UsersPanel = ({
                     </Button>
                   </div>
                 )}
-              </>,
+              </Fragment>,
             ])}
           />
         ) : (

@@ -23,7 +23,7 @@ export const UserPanel: FC<{ organization: Organization }> = ({
 
   return (
     <div>
-      <Typography variant="p-m-r">Timbratura</Typography>
+      <Typography variant="h3">Timbratura</Typography>
       <Spacer size={8} />
       {position === null && (
         <AlertBox variant="warning">
@@ -40,7 +40,7 @@ export const UserPanel: FC<{ organization: Organization }> = ({
         </Button>
       )}
       <Spacer size={32} />
-      <Typography variant="p-m-r">Le mie timbrature</Typography>
+      <Typography variant="h3">Le mie timbrature</Typography>
       <Spacer size={8} />
       <Calendar registrations={registrations} />
     </div>

@@ -47,7 +47,7 @@ export const Button: FC<Props> = ({
     if (variant === "tertiary") {
       return colors.black;
     }
-    return colors.grey;
+    return colors.darkerHue;
   };
 
   const iconNoChild = icon && !children;
