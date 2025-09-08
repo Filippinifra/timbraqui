@@ -7,6 +7,7 @@ export type User = {
   name: string;
   surname: string;
   email: string;
+  active: boolean;
 };
 
 export type UserApi = Tables<"users">;

@@ -99,6 +99,7 @@ export type Database = {
           name: string;
           org_id: string;
           surname: string;
+          active: boolean;
         };
         Insert: {
           deleted?: boolean | null;
@@ -108,6 +109,7 @@ export type Database = {
           name: string;
           org_id: string;
           surname: string;
+          active: boolean;
         };
         Update: {
           deleted?: boolean | null;
@@ -117,6 +119,7 @@ export type Database = {
           name?: string;
           org_id?: string;
           surname?: string;
+          active: boolean;
         };
         Relationships: [];
       };

@@ -7,7 +7,9 @@ import { Typography } from "@/components/Dumb/Typography";
 import { useUsers } from "@/hooks/api/useUsers";
 import { useAxios } from "@/hooks/useAxios";
 import { Organization } from "@/types/Organization";
-import { Fragment, useState } from "react";
+import { colors } from "@/utils/colors";
+import dayjs from "dayjs";
+import { useState } from "react";
 import { UserFormModal } from "./UserFormModal";
 
 export const UsersPanel = ({
@@ -106,36 +108,77 @@ export const UsersPanel = ({
         )}
         {!!users?.length ? (
           <Table
-            headers={["Nome", "Cognome", "Email", "Creato il", "Azioni"]}
-            values={users.map((u) => [
-              <Typography variant="p-s-r" key="cell-name">
-                {u.name}
-              </Typography>,
-              <Typography variant="p-s-r" key="cell-surname">
-                {u.surname}
-              </Typography>,
-              <Typography variant="p-s-r" key="cell-email">
-                {u.email}
-              </Typography>,
-              <Typography variant="p-s-r" color="#64748b" key="cell-created">
-                {new Date(u.createdAt).toLocaleDateString()}
-              </Typography>,
-              <Fragment key="cell-buttons">
-                {u.id !== organization.adminId && (
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <Button variant="tertiary" onClick={() => openEdit(u.id)}>
-                      Modifica
-                    </Button>
-                    <Button
-                      variant="distructive"
-                      onClick={() => setUserToDeleteId(u.id)}
-                    >
-                      Elimina
-                    </Button>
-                  </div>
-                )}
-              </Fragment>,
-            ])}
+            headers={[
+              "Nome",
+              "Cognome",
+              "Email",
+              "Creato il",
+              "Stato",
+              "Azioni",
+            ]}
+            values={users
+              .sort(({ createdAt: ca1 }, { createdAt: ca2 }) =>
+                dayjs(ca1).isBefore(dayjs(ca2)) ? -1 : 1
+              )
+              .map((u) => {
+                const colorTextRow = u.active ? "#64748b" : "#bebebe";
+
+                return [
+                  <Typography
+                    variant="p-s-r"
+                    key="cell-name"
+                    color={colorTextRow}
+                  >
+                    {u.name}
+                  </Typography>,
+                  <Typography
+                    variant="p-s-r"
+                    key="cell-surname"
+                    color={colorTextRow}
+                  >
+                    {u.surname}
+                  </Typography>,
+                  <Typography
+                    variant="p-s-r"
+                    key="cell-email"
+                    color={colorTextRow}
+                  >
+                    {u.email}
+                  </Typography>,
+                  <Typography
+                    variant="p-s-r"
+                    color={colorTextRow}
+                    key="cell-created"
+                  >
+                    {new Date(u.createdAt).toLocaleDateString()}
+                  </Typography>,
+                  <Typography
+                    variant="p-s-r"
+                    color={u.active ? colors.success : colors.error}
+                    key="cell-status"
+                  >
+                    {u.active ? "Attivo" : "Non attivo"}
+                  </Typography>,
+                  <div key="cell-buttons" style={{ minHeight: 38 }}>
+                    {u.id !== organization.adminId && (
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <Button
+                          variant="tertiary"
+                          onClick={() => openEdit(u.id)}
+                        >
+                          Modifica
+                        </Button>
+                        <Button
+                          variant="distructive"
+                          onClick={() => setUserToDeleteId(u.id)}
+                        >
+                          Elimina
+                        </Button>
+                      </div>
+                    )}
+                  </div>,
+                ];
+              })}
           />
         ) : (
           !usersLoading && (

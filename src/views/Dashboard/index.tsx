@@ -19,7 +19,7 @@ export const DashboardView = () => {
     return <Placeholder width="100%" height="100vh" />;
   }
 
-  if (!user.id) {
+  if (!user.id || !user.active) {
     return (
       <CenteredContentHeaderLayout>
         <div style={{ textAlign: "center", margin: "auto", padding: "0 16px" }}>

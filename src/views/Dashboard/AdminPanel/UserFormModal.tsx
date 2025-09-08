@@ -1,4 +1,5 @@
 import { Button } from "@/components/Dumb/Button";
+import { Checkbox } from "@/components/Dumb/Checkbox";
 import { InputForm } from "@/components/Dumb/FormElements/InputForm";
 import { Modal } from "@/components/Dumb/Modal";
 import { Spacer } from "@/components/Dumb/Spacer";
@@ -35,7 +36,7 @@ export const UserFormModal: FC<Props> = ({
   const { showToast } = useToast();
 
   const initialValues = useMemo(
-    () => ({ name: "", surname: "", email: "" }),
+    () => ({ name: "", surname: "", email: "", active: true }),
     []
   );
 
@@ -47,6 +48,7 @@ export const UserFormModal: FC<Props> = ({
         email: Yup.string()
           .email("Email non valida")
           .required("Campo obbligatorio"),
+        active: Yup.boolean().required(),
       }),
     []
   );
@@ -62,6 +64,7 @@ export const UserFormModal: FC<Props> = ({
           created_at: dayjs().toISOString(),
           id: v4(),
           deleted: false,
+          active: values.active,
         });
         showToast("success", "Utente aggiunto con successo");
       } else if (mode === "edit" && selectedUserId) {
@@ -70,9 +73,10 @@ export const UserFormModal: FC<Props> = ({
           name: values.name,
           surname: values.surname,
           email: values.email,
-          created_at: dayjs().toISOString(),
+          created_at: userSelected?.createdAt || "",
           org_id: organization.id,
           deleted: false,
+          active: values.active,
         });
         showToast("success", "Utente aggiornato con successo");
       }
@@ -100,12 +104,16 @@ export const UserFormModal: FC<Props> = ({
                 name: userSelected?.name || "",
                 surname: userSelected?.surname || "",
                 email: userSelected?.email || "",
+                active:
+                  userSelected?.active !== undefined
+                    ? userSelected?.active
+                    : true,
               }
             : initialValues
         }
         onSubmit={onSubmit}
       >
-        {({ handleSubmit, isSubmitting }) => (
+        {({ handleSubmit, isSubmitting, values, setFieldValue }) => (
           <Form onSubmit={handleSubmit}>
             <div style={{ display: "grid", gap: 12, minWidth: 320 }}>
               <InputForm
@@ -126,6 +134,14 @@ export const UserFormModal: FC<Props> = ({
                 placeholder="mario.rossi@example.com"
                 isRequired
               />
+              <Checkbox
+                checked={values.active}
+                onChange={(v) => {
+                  setFieldValue("active", v);
+                }}
+              >
+                Attivo
+              </Checkbox>
             </div>
             <Spacer size={16} />
             <div style={{ display: "flex", justifyContent: "end", gap: 8 }}>

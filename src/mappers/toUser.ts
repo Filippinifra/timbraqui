@@ -7,6 +7,7 @@ export const toUser = (u: UserApi): User => ({
   name: u.name,
   orgId: u.org_id,
   surname: u.surname,
+  active: u.active,
 });
 
 export const toUserApi = (u: User): UserApi => ({
@@ -17,4 +18,5 @@ export const toUserApi = (u: User): UserApi => ({
   org_id: u.orgId,
   surname: u.surname,
   deleted: false,
+  active: u.active,
 });
