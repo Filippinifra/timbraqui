@@ -61,7 +61,7 @@ export const UserFormModal: FC<Props> = ({
           email: values.email,
           created_at: dayjs().toISOString(),
           id: v4(),
-          active: true,
+          deleted: false,
         });
         showToast("success", "Utente aggiunto con successo");
       } else if (mode === "edit" && selectedUserId) {
@@ -72,7 +72,7 @@ export const UserFormModal: FC<Props> = ({
           email: values.email,
           created_at: dayjs().toISOString(),
           org_id: organization.id,
-          active: true,
+          deleted: false,
         });
         showToast("success", "Utente aggiornato con successo");
       }

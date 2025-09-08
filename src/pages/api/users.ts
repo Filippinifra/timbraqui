@@ -15,7 +15,7 @@ export default withApiProtection((req, res) =>
             await supabase
               .from("users")
               .select()
-              .eq("active", true)
+              .eq("deleted", false)
               .eq("org_id", req.query.org_id as string)
         );
       } else {
@@ -25,7 +25,7 @@ export default withApiProtection((req, res) =>
             await supabase
               .from("users")
               .select()
-              .eq("active", true)
+              .eq("deleted", false)
               .eq("email", req.query.email as string)
         );
       }
@@ -55,7 +55,7 @@ export default withApiProtection((req, res) =>
       return supabaseLogicReturnApi(
         res,
         async () =>
-          await supabase.from("users").update({ active: false }).eq("id", id)
+          await supabase.from("users").update({ deleted: true }).eq("id", id)
       );
     }
   })
