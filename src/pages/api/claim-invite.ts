@@ -26,18 +26,15 @@ export default async function handler(
       ).toString()
     );
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("users")
       .update({ clerk_id: userId })
       .eq("email", tokenParsed.email)
-      .is("clerk_id", null)
-      .select("id, org_id");
+      .is("clerk_id", null);
 
     if (error) return res.status(400).json({ error: error.message });
 
-    return res.status(200).json({
-      claimedCount: data?.length ?? 0,
-    });
+    return res.status(200).json(null);
   } catch (e: any) {
     return res
       .status(e?.status ?? 500)
