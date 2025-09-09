@@ -99,6 +99,7 @@ export type Database = {
       users: {
         Row: {
           active: boolean
+          clerk_id: string | null
           created_at: string
           deleted: boolean | null
           email: string
@@ -109,6 +110,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          clerk_id?: string | null
           created_at?: string
           deleted?: boolean | null
           email: string
@@ -119,6 +121,7 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          clerk_id?: string | null
           created_at?: string
           deleted?: boolean | null
           email?: string
@@ -134,6 +137,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      current_org_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      dbg_whoami: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       requesting_user_id: {
         Args: Record<PropertyKey, never>
         Returns: string

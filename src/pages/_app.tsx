@@ -73,7 +73,7 @@ const App = (props: AppProps) => {
 export default App;
 
 const Providers = ({ Component, pageProps }: AppProps) => {
-  const { clerkToken, userAuthId, email, isLoaded } = useAuthData();
+  const { userAuthId, email, isLoaded } = useAuthData();
 
   return isLoaded ? (
     <ToastProvider>
@@ -82,10 +82,7 @@ const Providers = ({ Component, pageProps }: AppProps) => {
           fetcher: (url: string | null, config: RequestInit | null) => {
             if (url) {
               return fetch(url, {
-                headers: {
-                  clerk: clerkToken || "",
-                  ...config?.headers,
-                },
+                headers: config?.headers,
                 ...config,
               }).then((res) => res.json());
             }

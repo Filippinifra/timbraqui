@@ -1,4 +1,5 @@
 import { useAuth } from "@clerk/nextjs";
+import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import {
   createContext,
@@ -64,6 +65,16 @@ export const AuthDataProvider: FC<{ children: ReactNode }> = ({ children }) => {
       return () => clearInterval(intervalId);
     }
   }, [auth.getToken, auth.isLoaded]);
+
+  useEffect(() => {
+    const claimInvite = async () => {
+      await axios.post("/api/claim-invite", {});
+    };
+
+    if (auth.isSignedIn && token) {
+      claimInvite();
+    }
+  }, [auth.isSignedIn, token]);
 
   // handle reset state when client logout
   useEffect(() => {
