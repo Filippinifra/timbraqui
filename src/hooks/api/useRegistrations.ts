@@ -43,7 +43,7 @@ export const useUserRegistrations = (userId: string) => {
 
 export const useOrganizationRegistrations = (orgId: string) => {
   const { data, isLoading, mutate } = useSWR<RegistrationApi[]>(
-    `/api/registrations?org_id=${orgId}`
+    `/api/registrations?org_id=def`
   );
 
   const refreshRegistrations = (
