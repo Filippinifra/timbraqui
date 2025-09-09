@@ -100,11 +100,7 @@ export const DashboardView = () => {
           </Typography>
         </div>
         <Spacer size={32} />
-        {isAdmin ? (
-          <AdminPanel organization={organization} />
-        ) : (
-          <UserPanel organization={organization} />
-        )}
+        {isAdmin ? <AdminPanel organization={organization} /> : <UserPanel />}
       </div>
     </div>
   );

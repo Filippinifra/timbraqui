@@ -83,7 +83,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       }
     }
 
-    const { userLat, userLng, ...registrationData } = body;
+    const { ...registrationData } = body;
 
     const { data, error } = await supabase
       .from("registrations")

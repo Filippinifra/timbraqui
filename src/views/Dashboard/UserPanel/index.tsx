@@ -6,20 +6,16 @@ import { useUserInfo } from "@/context/UserInfoContext";
 import { useUserRegistrations } from "@/hooks/api/useRegistrations";
 import { usePosition } from "@/hooks/usePosition";
 import { useRegistration } from "@/hooks/useRegistration";
-import { Organization } from "@/types/Organization";
 import "dayjs/locale/it";
-import { FC } from "react";
 import { Calendar } from "./Calendar";
 
-export const UserPanel: FC<{ organization: Organization }> = ({
-  organization,
-}) => {
+export const UserPanel = () => {
   const { user } = useUserInfo();
   const position = usePosition();
   const { refreshRegistrations, registrations } = useUserRegistrations(user.id);
   const { register, loading } = useRegistration((r) => {
     refreshRegistrations(r, "add");
-  }, organization);
+  });
 
   return (
     <div>

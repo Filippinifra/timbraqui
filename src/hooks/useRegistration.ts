@@ -2,16 +2,12 @@ import { useToast } from "@/context/ToastContext";
 import { useUserInfo } from "@/context/UserInfoContext";
 import { useAxios } from "@/hooks/useAxios";
 import { usePosition } from "@/hooks/usePosition";
-import { Organization } from "@/types/Organization";
 import { Registration, RegistrationApi } from "@/types/Registration";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { v4 } from "uuid";
 
-export const useRegistration = (
-  onRegister: (r: RegistrationApi) => void,
-  organization: Organization
-) => {
+export const useRegistration = (onRegister: (r: RegistrationApi) => void) => {
   const [loading, setLoading] = useState(false);
 
   const {

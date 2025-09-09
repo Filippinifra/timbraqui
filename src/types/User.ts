@@ -10,4 +10,4 @@ export type User = {
   active: boolean;
 };
 
-export type UserApi = Tables<"users">;
+export type UserApi = Omit<Tables<"users">, "clerk_id">;
