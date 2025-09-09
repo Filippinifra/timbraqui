@@ -1,4 +1,4 @@
-import { checkRouteReturnUser } from "@/auth/checkRouteReturnUserTranslations";
+import { checkRouteAndRedirect } from "@/auth/checkRouteAndRedirect";
 import { DashboardView } from "@/views/Dashboard";
 import { GetServerSideProps } from "next";
 
@@ -9,4 +9,4 @@ const Dashboard = () => {
 export default Dashboard;
 
 export const getServerSideProps: GetServerSideProps = (ctx) =>
-  checkRouteReturnUser(ctx);
+  checkRouteAndRedirect(ctx);

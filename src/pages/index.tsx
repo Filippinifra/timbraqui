@@ -1,4 +1,4 @@
-import { checkRouteReturnUser } from "@/auth/checkRouteReturnUserTranslations";
+import { checkRouteAndRedirect } from "@/auth/checkRouteAndRedirect";
 import { useAuthData } from "@/context/AuthDataContext";
 import { BUSINESS_EMAIL, BUSINESS_NAME } from "@/utils/businessInfo";
 import { Routes } from "@/utils/routes";
@@ -255,4 +255,4 @@ export default function Home() {
 }
 
 export const getServerSideProps: GetServerSideProps = (ctx) =>
-  checkRouteReturnUser(ctx);
+  checkRouteAndRedirect(ctx);

@@ -35,12 +35,15 @@ export const UserInfoProvider: FC<{
   const [emailStringed, setEmailStorage] = useState(email || "");
 
   // !user.id is used because clerkToken has a refresh function in use auth context
-  const { isLoading, data, mutate } = useSWR<UserApi[]>(
+  const {
+    isLoading,
+    data: user,
+    mutate,
+  } = useSWR<UserApi>(
     email && userAuthId && clerkToken && emailStringed
       ? `/api/users?email=${encodeURIComponent(emailStringed)}`
       : null
   );
-  const user = data?.[0];
 
   return (
     <UserInfoContext.Provider
@@ -54,7 +57,7 @@ export const UserInfoProvider: FC<{
             setEmailStorage(u.email);
           }
 
-          return u ? mutate([toUserApi(u)]) : mutate();
+          return u ? mutate(toUserApi(u)) : mutate();
         },
       }}
     >

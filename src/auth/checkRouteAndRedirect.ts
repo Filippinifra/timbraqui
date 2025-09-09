@@ -10,7 +10,7 @@ import {
   StaticRoutes,
 } from "../utils/routes";
 
-export const checkRouteReturnUser = async (
+export const checkRouteAndRedirect = async (
   context: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>
 ) => {
   const { req } = context;
