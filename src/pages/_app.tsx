@@ -1,3 +1,4 @@
+// pages/_app.tsx
 import { Placeholder } from "@/components/Dumb/Placeholder";
 import { ToastContainer } from "@/components/Dumb/ToastWrapper";
 import { AuthDataProvider, useAuthData } from "@/context/AuthDataContext";
@@ -13,80 +14,74 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import { SWRConfig } from "swr";
 
-const App = (props: AppProps) => {
+const clerkAppearance = {
+  elements: {
+    rootBox: { width: "auto" },
+    cardBox: {
+      boxShadow: "unset",
+      border: "none",
+      borderRadius: 0,
+      width: "auto",
+      padding: 1,
+    },
+    card: {
+      backgroundColor: "transparent",
+      boxSizing: "border-box",
+      boxShadow: "unset",
+      padding: 0,
+      width: "auto",
+    },
+    footer: { display: "none" },
+    header: { display: "none" },
+    formButtonPrimary: {
+      backgroundColor: colors.primary,
+      color: "white",
+      "&:hover": { backgroundColor: colors.black, color: colors.primary },
+      "&:after": { border: "none", outline: "none" },
+      "&:before": { border: "none", outline: "none" },
+    },
+  },
+} as const;
+
+const fetcher = (url?: string, init?: RequestInit) =>
+  url
+    ? fetch(url, init).then((r) => {
+        return r.json();
+      })
+    : null;
+
+export default function App(props: AppProps) {
+  const { Component, pageProps } = props;
+
   return (
     <>
       <Head>
-        <title>{`${BUSINESS_NAME}`}</title>
+        <title>{BUSINESS_NAME}</title>
       </Head>
-      <ClerkProvider
-        {...props}
-        localization={itIT}
-        appearance={{
-          elements: {
-            rootBox: {
-              width: "auto",
-            },
-            cardBox: {
-              boxShadow: "unset",
-              border: "none",
-              borderRadius: 0,
-              width: "auto",
-              padding: 1,
-            },
-            card: {
-              backgroundColor: "transparent",
-              boxSizing: "border-box",
-              boxShadow: "unset",
-              padding: 0,
-              width: "auto",
-            },
-            footer: { display: "none" },
-            header: { display: "none" },
-            formButtonPrimary: {
-              backgroundColor: colors.primary,
-              color: "white",
-              "&:hover": {
-                backgroundColor: colors.black,
-                color: colors.primary,
-              },
-              "&:after": {
-                border: "none",
-                outline: "none",
-              },
-              "&:before": {
-                border: "none",
-                outline: "none",
-              },
-            },
-          },
-        }}
-      >
+
+      <ClerkProvider localization={itIT} appearance={clerkAppearance}>
         <AuthDataProvider>
-          <Providers {...props} />
+          <Providers>
+            <Component {...pageProps} />
+          </Providers>
         </AuthDataProvider>
       </ClerkProvider>
     </>
   );
-};
+}
 
-export default App;
-
-const Providers = ({ Component, pageProps }: AppProps) => {
+function Providers({ children }: { children: React.ReactNode }) {
   const { userAuthId, email, isLoaded } = useAuthData();
 
-  return isLoaded ? (
+  if (!isLoaded) {
+    return <Placeholder width="100%" height="100vh" />;
+  }
+
+  return (
     <ToastProvider>
       <SWRConfig
         value={{
-          fetcher: (url: string | null, config: RequestInit | null) => {
-            if (url) {
-              return fetch(url, {
-                headers: config?.headers,
-                ...config,
-              }).then((res) => res.json());
-            }
-          },
+          fetcher,
           shouldRetryOnError: false,
           revalidateOnFocus: false,
         }}
@@ -95,18 +90,11 @@ const Providers = ({ Component, pageProps }: AppProps) => {
           className={`${FONT.className} font-[family-name:var(--font-family-1)]`}
         >
           <UserInfoProvider userAuthId={userAuthId || ""} email={email}>
-            {/* <NextNProgress
-            color={colors.primaryLight}
-            height={5}
-            options={{ showSpinner: false }}
-          /> */}
-            <Component {...pageProps} />
+            {children}
           </UserInfoProvider>
           <ToastContainer />
         </div>
       </SWRConfig>
     </ToastProvider>
-  ) : (
-    <Placeholder width="100%" height="100vh" />
   );
-};
+}

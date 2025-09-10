@@ -1,99 +1,130 @@
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 import {
   createContext,
-  FC,
-  ReactNode,
   useContext,
   useEffect,
+  useRef,
   useState,
+  type FC,
+  type ReactNode,
 } from "react";
 
-export interface AuthDataInterface {
+export interface AuthData {
   userAuthId: string | null;
   clerkToken: string | null;
-  isLoaded: boolean;
   email: string | null;
+  isLoaded: boolean;
 }
 
-const dataDefualt = {
+const DEFAULT: AuthData = {
   userAuthId: null,
   clerkToken: null,
   email: null,
+  isLoaded: false,
 };
 
-export const AuthDataContext = createContext<AuthDataInterface>({
-  ...dataDefualt,
-  isLoaded: false,
-});
+const AuthDataContext = createContext<AuthData>(DEFAULT);
+
+type Jwt = { exp?: number };
+
+function scheduleRefresh(token: string, refresh: () => void) {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1])) as Jwt;
+    const expMs = (payload.exp ?? 0) * 1000;
+
+    const delay = Math.max(0, expMs - Date.now() - 30_000);
+    const id = window.setTimeout(refresh, delay);
+    return () => window.clearTimeout(id);
+  } catch {
+    return () => {};
+  }
+}
 
 export const AuthDataProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const auth = useAuth();
-  const [token, setToken] = useState<string | null>(null);
-  const [data, setData] =
-    useState<Omit<AuthDataInterface, "isLoaded">>(dataDefualt);
+  const { isLoaded, isSignedIn, userId, getToken, sessionId } = useAuth();
+  const { user } = useUser();
 
-  const getSetData = async () => {
-    setData({
-      clerkToken: token,
-      userAuthId: auth.sessionId ? auth.userId : null,
-      email: token ? jwtDecode<{ email: string }>(token).email : null,
-    });
+  const [clerkToken, setClerkToken] = useState<string | null>(null);
+  const [claimed, setClaimed] = useState(false);
+  const cleanupRefreshRef = useRef<() => void>(() => {});
+  const claimingRef = useRef(false);
+
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn || !sessionId) {
+      setClaimed(false);
+      return;
+    }
+
+    const key = `claimed:${sessionId}`;
+    if (sessionStorage.getItem(key) === "1") {
+      setClaimed(true);
+      return;
+    }
+
+    if (claimingRef.current) return;
+    claimingRef.current = true;
+
+    (async () => {
+      try {
+        await axios.post("/api/claim-invite", {});
+        sessionStorage.setItem(key, "1");
+        setClaimed(true);
+      } catch (e) {
+        sessionStorage.setItem(key, "1");
+        setClaimed(true);
+      } finally {
+        claimingRef.current = false;
+      }
+    })();
+  }, [isLoaded, isSignedIn, sessionId]);
+
+  const fetchToken = async () => {
+    try {
+      const t = await getToken({ template: "supabase" });
+      setClerkToken(t ?? null);
+
+      cleanupRefreshRef.current?.();
+      if (t) cleanupRefreshRef.current = scheduleRefresh(t, fetchToken);
+    } catch {
+      setClerkToken(null);
+    }
   };
 
   useEffect(() => {
-    if (token) {
-      getSetData();
+    if (!isLoaded || !isSignedIn) {
+      setClerkToken(null);
+      cleanupRefreshRef.current?.();
+      return;
     }
-  }, [token]);
+    if (!claimed) return;
+    fetchToken();
+  }, [isLoaded, isSignedIn, claimed, sessionId]);
 
   useEffect(() => {
-    if (auth.isLoaded) {
-      const fetchToken = async () => {
-        const newToken = await auth.getToken({ template: "supabase" });
-        setToken(newToken);
+    if (!isSignedIn || !claimed) return;
 
-        if (newToken === null) {
-          getSetData();
-        }
-      };
-
-      fetchToken();
-      const intervalId = setInterval(fetchToken, 60 * 1000);
-
-      return () => clearInterval(intervalId);
-    }
-  }, [auth.getToken, auth.isLoaded]);
-
-  useEffect(() => {
-    const claimInvite = async () => {
-      await axios.post("/api/claim-invite", {});
+    const onFocus = () => fetchToken();
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") fetchToken();
     };
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [isSignedIn, claimed]);
 
-    if (auth.isSignedIn && token) {
-      claimInvite();
-    }
-  }, [auth.isSignedIn, token]);
-
-  // handle reset state when client logout
-  useEffect(() => {
-    if (!data.userAuthId || !auth.isSignedIn) {
-      setToken(null);
-      setData(dataDefualt);
-    }
-  }, [data.userAuthId, auth.isSignedIn]);
+  const value: AuthData = {
+    userAuthId: userId ?? null,
+    clerkToken,
+    email: user?.primaryEmailAddress?.emailAddress ?? null,
+    isLoaded: isLoaded && (!isSignedIn || (claimed && Boolean(clerkToken))),
+  };
 
   return (
-    <AuthDataContext.Provider
-      value={{
-        ...data,
-        isLoaded:
-          auth.isLoaded && auth.sessionId
-            ? Boolean(token) && Boolean(data.email)
-            : auth.isLoaded,
-      }}
-    >
+    <AuthDataContext.Provider value={value}>
       {children}
     </AuthDataContext.Provider>
   );
