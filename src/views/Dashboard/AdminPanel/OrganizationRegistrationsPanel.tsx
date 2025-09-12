@@ -252,6 +252,11 @@ export const OrganizationRegistrationsPanel: FC<{
                       </div>
                     )
                   )}
+                  {!orgRegistrationsByDayToShowGrouped.length && (
+                    <Typography variant="p-s-r" color="lightgray">
+                      Nessuna timbratura
+                    </Typography>
+                  )}
                 </div>
               )}
               {view === "list" && (
@@ -300,6 +305,11 @@ export const OrganizationRegistrationsPanel: FC<{
                     })}
                     padding="4px 24px"
                   />
+                  {!orgRegistrationsByDayToShowGrouped.length && (
+                    <Typography variant="p-s-r" color="lightgray">
+                      Nessuna timbratura
+                    </Typography>
+                  )}
                 </div>
               )}
               {view === "calendar" && (
