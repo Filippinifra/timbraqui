@@ -16,29 +16,14 @@ import { SWRConfig } from "swr";
 
 const clerkAppearance = {
   elements: {
-    rootBox: { width: "auto" },
-    cardBox: {
-      boxShadow: "unset",
-      border: "none",
-      borderRadius: 0,
-      width: "auto",
-      padding: 1,
-    },
-    card: {
-      backgroundColor: "transparent",
-      boxSizing: "border-box",
-      boxShadow: "unset",
-      padding: 0,
-      width: "auto",
-    },
-    footer: { display: "none" },
-    header: { display: "none" },
+    card: "shadow-lg p-6 rounded-lg",
     formButtonPrimary: {
       backgroundColor: colors.primary,
       color: "white",
-      "&:hover": { backgroundColor: colors.black, color: colors.primary },
-      "&:after": { border: "none", outline: "none" },
-      "&:before": { border: "none", outline: "none" },
+      "&:hover": {
+        backgroundColor: colors.darkerHue,
+        color: colors.primary,
+      },
     },
   },
 } as const;

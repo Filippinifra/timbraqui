@@ -52,7 +52,7 @@ export const UsersPanel = ({
       await refreshUsers();
       showToast("success", "Utente eliminato con successo");
       setUserToDeleteId(null);
-    } catch (error) {
+    } catch {
       showToast("error", "Errore nell'eliminazione dell'utente");
     }
   };

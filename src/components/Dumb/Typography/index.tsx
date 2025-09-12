@@ -20,6 +20,8 @@ interface Props {
   style?: CSSProperties;
   component?: string;
   ellipsis?: true | 0 | 1 | 2;
+  href?: string;
+  target?: string;
 }
 
 export const Typography: FC<Props> = ({
@@ -29,6 +31,8 @@ export const Typography: FC<Props> = ({
   component,
   style,
   ellipsis,
+  href,
+  target,
 }) => {
   const Component =
     typeof children === "string"
@@ -48,6 +52,8 @@ export const Typography: FC<Props> = ({
 
   return (
     <Component
+      href={href}
+      target={target}
       className={typographyClasses({
         variant,
         ellipsisLines: getEllipsisLines(),

@@ -3,13 +3,12 @@ import { Placeholder } from "@/components/Dumb/Placeholder";
 import { Spacer } from "@/components/Dumb/Spacer";
 import { Typography } from "@/components/Dumb/Typography";
 import { CenteredContentHeaderLayout } from "@/components/Layout/CenteredContentHeaderLayout";
+import { Layout } from "@/components/Layout/Layout";
 import { useUserInfo } from "@/context/UserInfoContext";
 import { useOrganization } from "@/hooks/api/useOrganization";
-import { BUSINESS_EMAIL, BUSINESS_NAME } from "@/utils/businessInfo";
+import { BUSINESS_EMAIL } from "@/utils/businessInfo";
 import { colors } from "@/utils/colors";
-import { zIndexValues } from "@/utils/zIndex";
 import { SignOutButton } from "@clerk/nextjs";
-import Image from "next/image";
 import { AdminPanel } from "./AdminPanel";
 import { UserPanel } from "./UserPanel";
 
@@ -51,66 +50,27 @@ export const DashboardView = () => {
   const isAdmin = organization.adminId.some((id) => id === user.id);
 
   return (
-    <div>
+    <Layout>
+      <Typography variant="h3">La mia organizzazione</Typography>
+      <Spacer size={8} />
       <div
         style={{
-          backgroundColor: "#ededed",
-          position: "sticky",
-          top: 0,
-          zIndex: zIndexValues.header,
+          padding: 16,
+          background: "#f1f5f9",
+          borderRadius: 8,
+          width: 300,
         }}
       >
-        <div
-          style={{
-            maxWidth: 1000,
-            margin: "auto",
-            display: "flex",
-            justifyContent: "space-between",
-            padding: 32,
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <Image
-              src="/logo-transparent.png"
-              alt="TimbraQui"
-              width={32}
-              height={32}
-            />
-            <Typography variant="h2">{BUSINESS_NAME} - Dashboard</Typography>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <Typography variant="p-m-r">
-              {user.name} {user.surname}
-            </Typography>
-            <SignOutButton>
-              <Button variant="secondary">Esci</Button>
-            </SignOutButton>
-          </div>
-        </div>
+        <Typography variant="p-m-r" color={colors.primary}>
+          {organization.name}
+        </Typography>
+        <Spacer size={4} />
+        <Typography variant="p-s-r" color="#64748b">
+          Indirizzo: {organization.address}
+        </Typography>
       </div>
-      <div style={{ padding: 32, maxWidth: 1000, margin: "auto" }}>
-        <Spacer size={24} />
-        <Typography variant="h3">La mia organizzazione</Typography>
-        <Spacer size={8} />
-        <div
-          style={{
-            padding: 16,
-            background: "#f1f5f9",
-            borderRadius: 8,
-            width: 300,
-          }}
-        >
-          <Typography variant="p-m-r" color={colors.primary}>
-            {organization.name}
-          </Typography>
-          <Spacer size={4} />
-          <Typography variant="p-s-r" color="#64748b">
-            Indirizzo: {organization.address}
-          </Typography>
-        </div>
-        <Spacer size={32} />
-        {isAdmin ? <AdminPanel organization={organization} /> : <UserPanel />}
-      </div>
-    </div>
+      <Spacer size={32} />
+      {isAdmin ? <AdminPanel organization={organization} /> : <UserPanel />}
+    </Layout>
   );
 };
