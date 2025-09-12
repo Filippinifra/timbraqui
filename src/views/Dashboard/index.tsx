@@ -9,6 +9,7 @@ import { BUSINESS_EMAIL, BUSINESS_NAME } from "@/utils/businessInfo";
 import { colors } from "@/utils/colors";
 import { zIndexValues } from "@/utils/zIndex";
 import { SignOutButton } from "@clerk/nextjs";
+import Image from "next/image";
 import { AdminPanel } from "./AdminPanel";
 import { UserPanel } from "./UserPanel";
 
@@ -68,7 +69,15 @@ export const DashboardView = () => {
             padding: 32,
           }}
         >
-          <Typography variant="h1">{BUSINESS_NAME} - Dashboard</Typography>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <Image
+              src="/logo-transparent.png"
+              alt="TimbraQui"
+              width={32}
+              height={32}
+            />
+            <Typography variant="h2">{BUSINESS_NAME} - Dashboard</Typography>
+          </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <Typography variant="p-m-r">
               {user.name} {user.surname}

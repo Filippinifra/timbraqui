@@ -4,6 +4,7 @@ import { BUSINESS_EMAIL, BUSINESS_NAME } from "@/utils/businessInfo";
 import { Routes } from "@/utils/routes";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
+import Image from "next/image";
 
 const features = [
   {
@@ -51,7 +52,6 @@ export default function Home() {
           padding: "0",
         }}
       >
-        {/* HERO SECTION */}
         <section
           style={{
             width: "100%",
@@ -76,40 +76,20 @@ export default function Home() {
               style={{
                 background: "#2563eb10",
                 borderRadius: "50%",
-                width: 120,
-                height: 120,
+                width: 64,
+                height: 64,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 marginBottom: 16,
               }}
             >
-              <svg
-                width="64"
-                height="64"
-                viewBox="0 0 64 64"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <rect
-                  x="8"
-                  y="16"
-                  width="48"
-                  height="36"
-                  rx="8"
-                  fill="#2563eb"
-                />
-                <rect
-                  x="16"
-                  y="8"
-                  width="32"
-                  height="12"
-                  rx="6"
-                  fill="#60a5fa"
-                />
-                <rect x="24" y="32" width="16" height="8" rx="4" fill="#fff" />
-                <circle cx="32" cy="40" r="3" fill="#2563eb" />
-              </svg>
+              <Image
+                src="/logo-transparent.png"
+                alt="TimbraQui"
+                width={64}
+                height={64}
+              />
             </div>
             <h1
               style={{
