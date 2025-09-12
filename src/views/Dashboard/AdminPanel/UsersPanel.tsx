@@ -4,6 +4,7 @@ import { Panel } from "@/components/Dumb/Panel";
 import { Spacer } from "@/components/Dumb/Spacer";
 import { Table } from "@/components/Dumb/Table";
 import { Typography } from "@/components/Dumb/Typography";
+import { useToast } from "@/context/ToastContext";
 import { useUsers } from "@/hooks/api/useUsers";
 import { useAxios } from "@/hooks/useAxios";
 import { Organization } from "@/types/Organization";
@@ -27,6 +28,8 @@ export const UsersPanel = ({
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [userToDeleteId, setUserToDeleteId] = useState<string | null>(null);
 
+  const { showToast } = useToast();
+
   const openAdd = () => {
     setMode("add");
     setSelectedUserId(null);
@@ -43,9 +46,15 @@ export const UsersPanel = ({
 
   const confirmDelete = async () => {
     if (!userToDeleteId) return;
-    await axios(`/api/users?id=${userToDeleteId}`, "DELETE");
-    await refreshUsers();
-    setUserToDeleteId(null);
+
+    try {
+      await axios(`/api/users?id=${userToDeleteId}`, "DELETE");
+      await refreshUsers();
+      showToast("success", "Utente eliminato con successo");
+      setUserToDeleteId(null);
+    } catch (error) {
+      showToast("error", "Errore nell'eliminazione dell'utente");
+    }
   };
 
   return (
