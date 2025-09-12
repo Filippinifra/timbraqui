@@ -4,8 +4,15 @@ import { Icon, Icons } from "../Icon";
 import { Typography, variant as TypographyVariants } from "../Typography";
 import { buttonClasses, iconRounderWrapperClass } from "./style.css";
 
-type variant = "primary" | "secondary" | "distructive" | "tertiary";
-type size = "m" | "s" | "l";
+type variant =
+  | "primary"
+  | "secondary"
+  | "distructive"
+  | "tertiary"
+  | "success"
+  | "warning";
+type size = "m" | "s" | "l" | "xl";
+type special = "none" | "rounded";
 
 interface Props {
   variant?: variant;
@@ -16,10 +23,12 @@ interface Props {
   icon?: Icons;
   fullWidth?: boolean;
   size?: size;
+  special?: special;
 }
 
 const fromSizeToTypographyVariant: { [key in size]: TypographyVariants } = {
-  l: "h3",
+  xl: "h3",
+  l: "h4",
   m: "p-m-r",
   s: "p-s-r",
 };
@@ -33,6 +42,7 @@ export const Button: FC<Props> = ({
   type,
   fullWidth,
   size = "m",
+  special = "none",
 }) => {
   const getColor = () => {
     if (disabled) {
@@ -47,6 +57,12 @@ export const Button: FC<Props> = ({
     if (variant === "tertiary") {
       return colors.black;
     }
+    if (variant === "success") {
+      return colors.white;
+    }
+    if (variant === "warning") {
+      return colors.white;
+    }
     return colors.darkerHue;
   };
 
@@ -54,7 +70,7 @@ export const Button: FC<Props> = ({
 
   return (
     <button
-      className={`${buttonClasses({ variant, disabled, size })} ${
+      className={`${buttonClasses({ variant, disabled, size, special })} ${
         iconNoChild ? iconRounderWrapperClass : ""
       }`}
       onClick={onClick}
@@ -63,7 +79,11 @@ export const Button: FC<Props> = ({
       style={{ width: fullWidth ? "-webkit-fill-available" : "auto" }}
     >
       {icon && (
-        <Icon name={icon} size={size === "m" ? "xl" : "l"} color={getColor()} />
+        <Icon
+          name={icon}
+          size={size === "xl" ? "xl" : size === "l" ? "l" : "m"}
+          color={getColor()}
+        />
       )}
       {children && (
         <Typography

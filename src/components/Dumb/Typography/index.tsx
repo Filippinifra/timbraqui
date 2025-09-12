@@ -6,6 +6,8 @@ export type variant =
   | "h1"
   | "h2"
   | "h3"
+  | "h4"
+  | "p-l-r"
   | "p-m-r"
   | "p-m-sb"
   | "p-s-r"
@@ -73,6 +75,8 @@ const componentVariant: { [id in variant]: string } = {
   h1: "h1",
   h2: "h1",
   h3: "h2",
+  h4: "h3",
+  "p-l-r": "p",
   "p-m-r": "p",
   "p-m-sb": "p",
   "p-s-r": "p",

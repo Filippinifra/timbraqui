@@ -58,6 +58,24 @@ export const buttonClasses = recipe({
         ":disabled": { backgroundColor: colors.disabled },
         ":focus": { outline: `2px solid ${colors.primaryLight}` },
       },
+      success: {
+        backgroundColor: colors.success,
+        ":hover": {
+          outline: `2px solid ${colors.successLight}`,
+          backgroundColor: colors.successDark,
+        },
+        ":disabled": { backgroundColor: colors.disabled },
+        ":focus": { outline: `2px solid ${colors.successLight}` },
+      },
+      warning: {
+        backgroundColor: colors.warning,
+        ":hover": {
+          outline: `2px solid ${colors.warningLight}`,
+          backgroundColor: colors.warningDark,
+        },
+        ":disabled": { backgroundColor: colors.disabled },
+        ":focus": { outline: `2px solid ${colors.warningLight}` },
+      },
     },
     disabled: {
       true: {
@@ -70,12 +88,26 @@ export const buttonClasses = recipe({
       false: {},
     },
     size: {
+      s: { padding: "6px 12px", gap: 4 },
       m: { padding: "8px 16px", gap: 8 },
-      s: { padding: "8px 16px", gap: 4 },
-      l: {
-        padding: "12px 32px",
-        gap: 12,
+      l: { padding: "12px 24px", gap: 12 },
+      xl: {
+        padding: "16px 32px",
+        gap: 16,
       },
+    },
+    special: {
+      rounded: {
+        borderRadius: "50px",
+        boxShadow: "0 8px 32px rgba(59,130,246,0.3)",
+        transition: "all 0.3s ease",
+        minWidth: "200px",
+        ":hover": {
+          transform: "translateY(-2px)",
+          boxShadow: "0 12px 40px rgba(59,130,246,0.4)",
+        },
+      },
+      none: {},
     },
   },
 });

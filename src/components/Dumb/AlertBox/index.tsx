@@ -16,10 +16,10 @@ const fromVariantToObject: {
   warning: { color: colors.warning, icon: "FileWarning" },
 };
 
-export const AlertBox: FC<{ children: ReactNode; variant?: Variant }> = ({
-  children,
-  variant = "info",
-}) => {
+export const AlertBox: FC<{
+  children: ReactNode;
+  variant?: Variant;
+}> = ({ children, variant = "info" }) => {
   return (
     <div className={wrapperClass({ variant })}>
       <Icon

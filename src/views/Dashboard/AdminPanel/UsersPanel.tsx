@@ -1,6 +1,5 @@
 import { Button } from "@/components/Dumb/Button";
 import { Modal } from "@/components/Dumb/Modal";
-import { Panel } from "@/components/Dumb/Panel";
 import { Spacer } from "@/components/Dumb/Spacer";
 import { Table } from "@/components/Dumb/Table";
 import { Typography } from "@/components/Dumb/Typography";
@@ -95,18 +94,57 @@ export const UsersPanel = ({
 
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          background: "white",
+          borderRadius: "20px",
+          padding: "2rem",
+          marginBottom: "2rem",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+          border: "1px solid #f1f5f9",
         }}
       >
-        <Typography variant="h3">Utenti</Typography>
-        <Button onClick={openAdd} icon="Plus">
-          Aggiungi utente
-        </Button>
-      </div>
-      <Spacer size={8} />
-      <Panel>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "1rem",
+              marginBottom: "1.5rem",
+            }}
+          >
+            <div
+              style={{
+                background: "linear-gradient(45deg, #3b82f6, #1d4ed8)",
+                borderRadius: "12px",
+                width: "48px",
+                height: "48px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <span style={{ fontSize: "1.5rem" }}>👥</span>
+            </div>
+            <div>
+              <Typography variant="h3" style={{ color: "#1e293b", margin: 0 }}>
+                Gestione Utenti
+              </Typography>
+              <Typography variant="p-s-r" color="#64748b" style={{ margin: 0 }}>
+                Aggiungi, modifica e gestisci i membri del team
+              </Typography>
+            </div>
+          </div>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <Button onClick={openAdd} icon="Plus" variant="success">
+              Aggiungi Utente
+            </Button>
+          </div>
+        </div>
+        <Spacer size={32} />
         {usersLoading && (
           <Typography variant="p-s-r">Caricamento utenti...</Typography>
         )}
@@ -196,7 +234,7 @@ export const UsersPanel = ({
             </Typography>
           )
         )}
-      </Panel>
+      </div>
     </div>
   );
 };

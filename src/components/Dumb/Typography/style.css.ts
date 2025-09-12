@@ -16,6 +16,8 @@ export const typographyClasses = recipe({
       h1: { fontSize: 33, lineHeight: "125%", fontWeight: "bold" },
       h2: { fontSize: 26, lineHeight: "125%", fontWeight: "bold" },
       h3: { fontSize: 20, lineHeight: "125%", fontWeight: "bold" },
+      h4: { fontSize: 18, lineHeight: "125%", fontWeight: "bold" },
+      "p-l-r": { fontSize: 18, lineHeight: "125%", fontWeight: "regular" },
       "p-m-r": { fontSize: 16, lineHeight: "125%", fontWeight: "regular" },
       "p-m-sb": { fontSize: 16, lineHeight: "125%", fontWeight: "bold" },
       "p-s-r": { fontSize: 14, lineHeight: "125%", fontWeight: "regular" },

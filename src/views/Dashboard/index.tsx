@@ -1,6 +1,6 @@
 import { Button } from "@/components/Dumb/Button";
+import { InfoCardWithContent } from "@/components/Dumb/InfoCardWithContent";
 import { Placeholder } from "@/components/Dumb/Placeholder";
-import { Spacer } from "@/components/Dumb/Spacer";
 import { Typography } from "@/components/Dumb/Typography";
 import { CenteredContentHeaderLayout } from "@/components/Layout/CenteredContentHeaderLayout";
 import { Layout } from "@/components/Layout/Layout";
@@ -9,8 +9,26 @@ import { useOrganization } from "@/hooks/api/useOrganization";
 import { BUSINESS_EMAIL } from "@/utils/businessInfo";
 import { colors } from "@/utils/colors";
 import { SignOutButton } from "@clerk/nextjs";
+import Image from "next/image";
 import { AdminPanel } from "./AdminPanel";
 import { UserPanel } from "./UserPanel";
+import {
+  disabledAccountCard,
+  disabledAccountIcon,
+  errorCard,
+  errorIcon,
+  loadingContainer,
+  loadingSpinner,
+  organizationContent,
+  warningCard,
+  warningIcon,
+  welcomeBlur1,
+  welcomeBlur2,
+  welcomeContent,
+  welcomeHeader,
+  welcomeLogo,
+  welcomeSection,
+} from "./styles.css";
 
 export const DashboardView = () => {
   const { user, loading } = useUserInfo();
@@ -23,53 +41,167 @@ export const DashboardView = () => {
   if (!user.id || !user.active) {
     return (
       <CenteredContentHeaderLayout>
-        <div style={{ textAlign: "center", margin: "auto", padding: "0 16px" }}>
-          <Typography variant="p-m-sb">Utente non abilitato</Typography>
-          <Spacer size={8} />
-          <Typography variant="p-s-r" color="#64748b">
-            {"Contatta l'amministratore a "}
-            <span style={{ fontWeight: 800 }}>{BUSINESS_EMAIL}</span>
-            {" per abilitare il tuo account"}
-          </Typography>
-          <Spacer size={16} />
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <SignOutButton>
-              <Button variant="tertiary">Esci</Button>
-            </SignOutButton>
+        <div className={disabledAccountCard}>
+          <div className={disabledAccountIcon}>
+            <span style={{ fontSize: "2rem" }}>⚠️</span>
           </div>
+          <Typography
+            variant="h3"
+            style={{ color: "#1e293b", marginBottom: "1rem" }}
+          >
+            Account Non Abilitato
+          </Typography>
+          <Typography
+            variant="p-m-r"
+            color="#64748b"
+            style={{ lineHeight: "1.6", marginBottom: "2rem" }}
+          >
+            Il tuo account non è ancora stato abilitato dall'amministratore.
+            <br />
+            Contatta{" "}
+            <span style={{ fontWeight: "700", color: colors.primary }}>
+              {BUSINESS_EMAIL}
+            </span>{" "}
+            per richiedere l'abilitazione.
+          </Typography>
+          <SignOutButton>
+            <Button variant="tertiary">Esci dall'Account</Button>
+          </SignOutButton>
         </div>
       </CenteredContentHeaderLayout>
     );
   }
 
-  if (orgLoading) return <div>Caricamento dati organizzazione...</div>;
-  if (orgError)
-    return <div>{"Errore nel caricamento dell'organizzazione."}</div>;
-  if (!organization) return <div>Organizzazione non trovata.</div>;
+  if (orgLoading) {
+    return (
+      <Layout>
+        <div className={loadingContainer}>
+          <div style={{ textAlign: "center" }}>
+            <div className={loadingSpinner} />
+            <Typography variant="p-m-r" color="#64748b">
+              Caricamento organizzazione...
+            </Typography>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (orgError) {
+    return (
+      <Layout>
+        <div className={errorCard}>
+          <div className={errorIcon}>
+            <span style={{ fontSize: "1.5rem" }}>❌</span>
+          </div>
+          <Typography
+            variant="h3"
+            style={{ color: "#dc2626", marginBottom: "0.5rem" }}
+          >
+            Errore di Caricamento
+          </Typography>
+          <Typography variant="p-m-r" color="#7f1d1d">
+            Non è stato possibile caricare i dati dell'organizzazione.
+          </Typography>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!organization) {
+    return (
+      <Layout>
+        <div className={warningCard}>
+          <div className={warningIcon}>
+            <span style={{ fontSize: "1.5rem" }}>⚠️</span>
+          </div>
+          <Typography
+            variant="h3"
+            style={{ color: "#d97706", marginBottom: "0.5rem" }}
+          >
+            Organizzazione Non Trovata
+          </Typography>
+          <Typography variant="p-m-r" color="#92400e">
+            L'organizzazione associata al tuo account non è stata trovata.
+          </Typography>
+        </div>
+      </Layout>
+    );
+  }
 
   const isAdmin = organization.adminId.some((id) => id === user.id);
 
   return (
     <Layout>
-      <Typography variant="h3">La mia organizzazione</Typography>
-      <Spacer size={8} />
-      <div
-        style={{
-          padding: 16,
-          background: "#f1f5f9",
-          borderRadius: 8,
-          width: 300,
-        }}
-      >
-        <Typography variant="p-m-r" color={colors.primary}>
-          {organization.name}
-        </Typography>
-        <Spacer size={4} />
-        <Typography variant="p-s-r" color="#64748b">
-          Indirizzo: {organization.address}
-        </Typography>
+      <div className={welcomeSection}>
+        <div className={welcomeBlur1} />
+        <div className={welcomeBlur2} />
+        <div className={welcomeContent}>
+          <div className={welcomeHeader}>
+            <div className={welcomeLogo}>
+              <Image
+                src="/logo-transparent.png"
+                alt="TimbraQui"
+                width={40}
+                height={40}
+              />
+            </div>
+            <div>
+              <Typography
+                variant="h2"
+                style={{
+                  color: "white",
+                  margin: 0,
+                  background: "linear-gradient(45deg, #60a5fa, #a78bfa)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                Benvenuto, {user.name}!
+              </Typography>
+              <Typography
+                variant="p-m-r"
+                style={{ opacity: 0.9, margin: 0 }}
+                color={colors.white}
+              >
+                {isAdmin ? "Amministratore" : "Dipendente"} •{" "}
+                {organization.name}
+              </Typography>
+            </div>
+          </div>
+          <Typography
+            variant="p-l-r"
+            style={{ opacity: 0.8, lineHeight: "1.6" }}
+            color={colors.white}
+          >
+            {isAdmin
+              ? "Gestisci il tuo team e monitora le presenze in tempo reale"
+              : "Timbra il tuo ingresso e uscita, visualizza le tue presenze"}
+          </Typography>
+        </div>
       </div>
-      <Spacer size={32} />
+
+      {/* ORGANIZATION INFO CARD */}
+      <InfoCardWithContent
+        icon="🏢"
+        title={organization.name}
+        description="La tua organizzazione"
+      >
+        <div className={organizationContent}>
+          <Typography
+            variant="p-s-sb"
+            color="#475569"
+            style={{ marginBottom: "0.5rem" }}
+          >
+            📍 Indirizzo
+          </Typography>
+          <Typography variant="p-m-r" color="#1e293b">
+            {organization.address}
+          </Typography>
+        </div>
+      </InfoCardWithContent>
+
+      {/* MAIN CONTENT */}
       {isAdmin ? <AdminPanel organization={organization} /> : <UserPanel />}
     </Layout>
   );

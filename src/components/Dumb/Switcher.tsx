@@ -18,6 +18,7 @@ export const Switcher: FC<Props> = ({ active, elements, onChange }) => {
         borderRadius: 8,
         gap: 4,
         display: "flex",
+        width: "fit-content",
       }}
     >
       {elements.map(({ icon, id }) => {

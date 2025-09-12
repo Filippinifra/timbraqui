@@ -6,7 +6,6 @@ import { DropdownForm } from "@/components/Dumb/FormElements/DropdownForm";
 import { InputForm } from "@/components/Dumb/FormElements/InputForm";
 import { IconButton } from "@/components/Dumb/IconButton";
 import { Modal } from "@/components/Dumb/Modal";
-import { Panel } from "@/components/Dumb/Panel";
 import { Spacer } from "@/components/Dumb/Spacer";
 import { Switcher } from "@/components/Dumb/Switcher";
 import { Table } from "@/components/Dumb/Table";
@@ -110,79 +109,144 @@ export const OrganizationRegistrationsPanel: FC<{
       </Modal>
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          background: "white",
+          borderRadius: "20px",
+          padding: "2rem",
+          marginBottom: "2rem",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+          border: "1px solid #f1f5f9",
         }}
       >
-        <Typography variant="h3">Timbrature utenti</Typography>
-        <div style={{ display: "flex", gap: 8 }}>
-          <Button
-            onClick={() => setIsExportOpen(true)}
-            variant="secondary"
-            icon="Download"
-          >
-            Esporta timbrature
-          </Button>
-          <Button onClick={() => setIsAddRegOpen(true)} icon="Plus">
-            Aggiungi timbratura
-          </Button>
-        </div>
-      </div>
-      <Spacer size={16} />
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "end",
-        }}
-      >
-        <div style={{ minWidth: 200 }}>
-          <Dropdown
-            onChange={(v) => {
-              setFilterUserId(v.value);
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "1rem",
+              marginBottom: "1.5rem",
             }}
-            value={
-              filterUserId && filterUserId !== "all"
-                ? {
-                    label: `${
-                      users.find(({ id }) => id === filterUserId)?.name
-                    } ${users.find(({ id }) => id === filterUserId)?.surname}`,
-                    value: filterUserId,
-                  }
-                : null
-            }
-            placeholder="Tutti"
-            options={[
-              ...(view !== "calendar"
-                ? [{ label: "Tutti", value: "all" }]
-                : []),
-              ...users.map((u) => ({
-                label: `${u.name} ${u.surname}`.trim() || u.email,
-                value: u.id,
-              })),
-            ]}
-            menuPosition="fixed"
-          />
+          >
+            <div
+              style={{
+                background: "linear-gradient(45deg, #8b5cf6, #7c3aed)",
+                borderRadius: "12px",
+                width: "48px",
+                height: "48px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <span style={{ fontSize: "1.5rem" }}>📊</span>
+            </div>
+            <div>
+              <Typography variant="h3" style={{ color: "#1e293b", margin: 0 }}>
+                Timbrature Utenti
+              </Typography>
+              <Typography variant="p-s-r" color="#64748b" style={{ margin: 0 }}>
+                Monitora e gestisci le presenze del team
+              </Typography>
+            </div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              gap: "0.75rem",
+              justifyContent: "flex-end",
+              flexWrap: "wrap",
+            }}
+          >
+            <Button
+              onClick={() => setIsExportOpen(true)}
+              variant="secondary"
+              icon="Download"
+              size="l"
+            >
+              Esporta Timbrature
+            </Button>
+            <Button
+              onClick={() => setIsAddRegOpen(true)}
+              icon="Plus"
+              variant="primary"
+              size="l"
+            >
+              Aggiungi Timbratura
+            </Button>
+          </div>
         </div>
-        <Switcher
-          active={view}
-          elements={[
-            { icon: "ListCheck", id: "listGrouped" },
-            { icon: "List", id: "list" },
-            { icon: "Calendar", id: "calendar" },
-          ]}
-          onChange={(id) => {
-            if (id === "calendar" && filterUserId === "all" && users[0]) {
-              setFilterUserId(users[0].id);
-            }
-            setView(id as view);
+        <Divider />
+        <Spacer size={32} />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "end",
+            marginBottom: "1.5rem",
+            flexWrap: "wrap",
+            gap: "1rem",
           }}
-        />
-      </div>
-      <Spacer size={8} />
-      <Panel>
+        >
+          <div style={{ minWidth: 200 }}>
+            <Typography
+              variant="p-s-sb"
+              color="#475569"
+              style={{ marginBottom: "0.5rem" }}
+            >
+              Filtra per utente
+            </Typography>
+            <Dropdown
+              onChange={(v) => {
+                setFilterUserId(v.value);
+              }}
+              value={
+                filterUserId && filterUserId !== "all"
+                  ? {
+                      label: `${
+                        users.find(({ id }) => id === filterUserId)?.name
+                      } ${
+                        users.find(({ id }) => id === filterUserId)?.surname
+                      }`,
+                      value: filterUserId,
+                    }
+                  : null
+              }
+              placeholder="Tutti"
+              options={[
+                ...(view !== "calendar"
+                  ? [{ label: "Tutti", value: "all" }]
+                  : []),
+                ...users.map((u) => ({
+                  label: `${u.name} ${u.surname}`.trim() || u.email,
+                  value: u.id,
+                })),
+              ]}
+              menuPosition="fixed"
+            />
+          </div>
+          <div>
+            <Typography
+              variant="p-s-sb"
+              color="#475569"
+              style={{ marginBottom: "0.5rem" }}
+            >
+              Visualizzazione
+            </Typography>
+            <Switcher
+              active={view}
+              elements={[
+                { icon: "ListCheck", id: "listGrouped" },
+                { icon: "List", id: "list" },
+                { icon: "Calendar", id: "calendar" },
+              ]}
+              onChange={(id) => {
+                if (id === "calendar" && filterUserId === "all" && users[0]) {
+                  setFilterUserId(users[0].id);
+                }
+                setView(id as view);
+              }}
+            />
+          </div>
+        </div>
         <div style={{ minHeight: 600 }}>
           {registrationLoading && (
             <Typography variant="p-s-r">Caricamento timbrature...</Typography>
@@ -322,7 +386,7 @@ export const OrganizationRegistrationsPanel: FC<{
             </Typography>
           )}
         </div>
-      </Panel>
+      </div>
 
       <Modal
         visible={isAddRegOpen}
