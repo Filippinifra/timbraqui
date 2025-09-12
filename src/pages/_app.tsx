@@ -1,4 +1,3 @@
-// pages/_app.tsx
 import { Placeholder } from "@/components/Dumb/Placeholder";
 import { ToastContainer } from "@/components/Dumb/ToastWrapper";
 import { AuthDataProvider, useAuthData } from "@/context/AuthDataContext";

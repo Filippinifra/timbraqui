@@ -7,3 +7,7 @@ button {
 .rdp-caption_label {
   z-index: auto !important;
 }
+
+html {
+  scroll-behavior: smooth;
+}
