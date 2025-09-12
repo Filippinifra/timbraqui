@@ -83,11 +83,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       }
     }
 
-    const { ...registrationData } = body;
-
-    const { data, error } = await supabase
-      .from("registrations")
-      .insert(registrationData);
+    const { data, error } = await supabase.from("registrations").insert({
+      //do that to avoid to pass lat and lng to supabase (throw error)
+      date: body.date,
+      id: body.id,
+      user_id: body.user_id,
+      created_at: body.created_at,
+    });
 
     if (error) return res.status(400).json({ error: error.message });
     return res.status(200).json(data);
