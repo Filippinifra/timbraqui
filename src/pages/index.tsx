@@ -1,6 +1,8 @@
 import { checkRouteAndRedirect } from "@/auth/checkRouteAndRedirect";
+import { Spacer } from "@/components/Dumb/Spacer";
+import { Footer } from "@/components/Layout/Footer";
 import { useAuthData } from "@/context/AuthDataContext";
-import { BUSINESS_EMAIL, BUSINESS_NAME } from "@/utils/businessInfo";
+import { BUSINESS_NAME } from "@/utils/businessInfo";
 import { Routes } from "@/utils/routes";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
@@ -151,7 +153,6 @@ export default function Home() {
             </a>
           </div>
         </section>
-
         {/* FEATURES SECTION */}
         <section
           style={{
@@ -203,32 +204,8 @@ export default function Home() {
             </div>
           ))}
         </section>
-
-        {/* FOOTER */}
-        <footer
-          style={{
-            width: "100%",
-            marginTop: "3rem",
-            padding: "2rem 0 1rem 0",
-            textAlign: "center",
-            color: "#64748b",
-            fontSize: "1rem",
-          }}
-        >
-          <div style={{ marginBottom: 8 }}>
-            Hai domande?{" "}
-            <a
-              href={`mailto:${BUSINESS_EMAIL}`}
-              style={{ color: "#2563eb", textDecoration: "underline" }}
-            >
-              Contattaci
-            </a>
-          </div>
-          <div>
-            © {new Date().getFullYear()} {BUSINESS_NAME}. Tutti i diritti
-            riservati.
-          </div>
-        </footer>
+        <Spacer size={32} />
+        <Footer /> <Spacer size={32} />
       </main>
     </>
   );
