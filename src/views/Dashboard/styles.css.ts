@@ -124,17 +124,6 @@ export const welcomeHeader = style({
   marginBottom: "1rem",
 });
 
-export const welcomeLogo = style({
-  background: "rgba(255,255,255,0.2)",
-  borderRadius: "50%",
-  width: "60px",
-  height: "60px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  backdropFilter: "blur(10px)",
-});
-
 export const welcomeTitle = style({
   color: "white",
   margin: 0,

@@ -9,7 +9,6 @@ import { useOrganization } from "@/hooks/api/useOrganization";
 import { BUSINESS_EMAIL } from "@/utils/businessInfo";
 import { colors } from "@/utils/colors";
 import { SignOutButton } from "@clerk/nextjs";
-import Image from "next/image";
 import { AdminPanel } from "./AdminPanel";
 import { UserPanel } from "./UserPanel";
 import {
@@ -26,7 +25,6 @@ import {
   welcomeBlur2,
   welcomeContent,
   welcomeHeader,
-  welcomeLogo,
   welcomeSection,
 } from "./styles.css";
 
@@ -138,14 +136,6 @@ export const DashboardView = () => {
         <div className={welcomeBlur2} />
         <div className={welcomeContent}>
           <div className={welcomeHeader}>
-            <div className={welcomeLogo}>
-              <Image
-                src="/logo-transparent.png"
-                alt="TimbraQui"
-                width={40}
-                height={40}
-              />
-            </div>
             <div>
               <Typography
                 variant="h2"
@@ -157,7 +147,7 @@ export const DashboardView = () => {
                   WebkitTextFillColor: "transparent",
                 }}
               >
-                Benvenuto, {user.name}!
+                Ciao, {user.name}!
               </Typography>
               <Typography
                 variant="p-m-r"

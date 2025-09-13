@@ -28,7 +28,7 @@ export const InfoCard: FC<Props> = ({
 }) => {
   return (
     <div className={infoCardClasses({ variant })}>
-      <div className={infoCardClasses({ iconSize })}>
+      <div>
         <div
           style={{
             background: iconGradient,

@@ -43,7 +43,7 @@ export const calendarCard = style({
 
 export const calendarHeader = style({
   display: "flex",
-  justifyContent: "space-between",
+  gap: "1rem",
   alignItems: "center",
   marginBottom: "1.5rem",
 });

@@ -11,6 +11,13 @@ import { colors } from "@/utils/colors";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { UserFormModal } from "./UserFormModal";
+import {
+  panelActions,
+  panelActionsDesktop,
+  panelActionsMobile,
+  panelHeader,
+  panelTitle,
+} from "./styles.css";
 
 export const UsersPanel = ({
   organization,
@@ -102,20 +109,8 @@ export const UsersPanel = ({
           border: "1px solid #f1f5f9",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "1rem",
-              marginBottom: "1.5rem",
-            }}
-          >
+        <div className={panelHeader}>
+          <div className={panelTitle}>
             <div
               style={{
                 background: "linear-gradient(45deg, #3b82f6, #1d4ed8)",
@@ -138,10 +133,19 @@ export const UsersPanel = ({
               </Typography>
             </div>
           </div>
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button onClick={openAdd} icon="Plus" variant="success">
-              Aggiungi Utente
-            </Button>
+          <div className={panelActions}>
+            <div className={panelActionsDesktop}>
+              <Button onClick={openAdd} icon="Plus" variant="success">
+                Aggiungi Utente
+              </Button>
+            </div>
+            <div className={panelActionsMobile}>
+              <div style={{ width: "100%" }}>
+                <Button onClick={openAdd} icon="Plus" variant="success">
+                  Aggiungi Utente
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
         <Spacer size={32} />

@@ -50,7 +50,7 @@ export const AdminPanel = ({
         <InfoCard
           icon="⚙️"
           title="Admin"
-          description="Ruolo Utente"
+          description="Ruolo"
           variant="centered"
           iconGradient="linear-gradient(45deg, #8b5cf6, #7c3aed)"
         />

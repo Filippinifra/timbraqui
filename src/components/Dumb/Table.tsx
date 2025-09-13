@@ -35,7 +35,10 @@ export const Table: FC<Props> = ({
         <tbody>
           {values?.map((row, i) => {
             return (
-              <tr key={`row-${i}`} style={{ borderTop: "1px solid #e2e8f0" }}>
+              <tr
+                key={`row-${i}`}
+                style={{ borderTop: "1px solid rgb(242, 245, 248)" }}
+              >
                 {row.map((col, i) => (
                   <td key={`col-${i}`} style={{ padding }}>
                     {col}

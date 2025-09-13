@@ -25,6 +25,13 @@ import { FC, useState } from "react";
 import { v4 } from "uuid";
 import * as Yup from "yup";
 import { Calendar } from "../UserPanel/Calendar";
+import {
+  panelActions,
+  panelActionsDesktop,
+  panelActionsMobile,
+  panelHeader,
+  panelTitle,
+} from "./styles.css";
 
 type view = "list" | "calendar" | "listGrouped";
 
@@ -117,15 +124,8 @@ export const OrganizationRegistrationsPanel: FC<{
           border: "1px solid #f1f5f9",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "1rem",
-              marginBottom: "1.5rem",
-            }}
-          >
+        <div className={panelHeader}>
+          <div className={panelTitle}>
             <div
               style={{
                 background: "linear-gradient(45deg, #8b5cf6, #7c3aed)",
@@ -148,30 +148,47 @@ export const OrganizationRegistrationsPanel: FC<{
               </Typography>
             </div>
           </div>
-          <div
-            style={{
-              display: "flex",
-              gap: "0.75rem",
-              justifyContent: "flex-end",
-              flexWrap: "wrap",
-            }}
-          >
-            <Button
-              onClick={() => setIsExportOpen(true)}
-              variant="secondary"
-              icon="Download"
-              size="l"
-            >
-              Esporta Timbrature
-            </Button>
-            <Button
-              onClick={() => setIsAddRegOpen(true)}
-              icon="Plus"
-              variant="primary"
-              size="l"
-            >
-              Aggiungi Timbratura
-            </Button>
+          <div className={panelActions}>
+            <div className={panelActionsDesktop}>
+              <Button
+                onClick={() => setIsExportOpen(true)}
+                variant="secondary"
+                icon="Download"
+                size="l"
+              >
+                Esporta Timbrature
+              </Button>
+              <Button
+                onClick={() => setIsAddRegOpen(true)}
+                icon="Plus"
+                variant="primary"
+                size="l"
+              >
+                Aggiungi Timbratura
+              </Button>
+            </div>
+            <div className={panelActionsMobile}>
+              <div style={{ width: "100%" }}>
+                <Button
+                  onClick={() => setIsExportOpen(true)}
+                  variant="secondary"
+                  icon="Download"
+                  size="l"
+                >
+                  Esporta Timbrature
+                </Button>
+              </div>
+              <div style={{ width: "100%" }}>
+                <Button
+                  onClick={() => setIsAddRegOpen(true)}
+                  icon="Plus"
+                  variant="primary"
+                  size="l"
+                >
+                  Aggiungi Timbratura
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
         <Divider />
@@ -255,7 +272,7 @@ export const OrganizationRegistrationsPanel: FC<{
             <>
               {view === "listGrouped" && (
                 <div
-                  style={{ display: "flex", flexDirection: "column", gap: 48 }}
+                  style={{ display: "flex", flexDirection: "column", gap: 32 }}
                 >
                   {orgRegistrationsByDayToShowGrouped.map(
                     ({ day, items: registrations }, index) => (
@@ -309,7 +326,6 @@ export const OrganizationRegistrationsPanel: FC<{
                         {index !==
                         orgRegistrationsByDayToShowGrouped.length - 1 ? (
                           <div>
-                            <Spacer size={32} />
                             <Divider />
                           </div>
                         ) : null}

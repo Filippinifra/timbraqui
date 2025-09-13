@@ -273,7 +273,7 @@ export default function Home() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
                 gap: "2rem",
               }}
             >
@@ -371,7 +371,7 @@ export default function Home() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
                 gap: "2rem",
               }}
             >
@@ -448,7 +448,7 @@ export default function Home() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(500px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
                 gap: "3rem",
               }}
             >
@@ -478,11 +478,14 @@ export default function Home() {
                       <li
                         key={index}
                         style={{
-                          display: "flex",
+                          display: "grid",
+                          gridTemplateColumns: "24px auto",
                           alignItems: "center",
+                          justifyContent: "start",
                           marginBottom: "1rem",
                           fontSize: "1.1rem",
                           color: "#475569",
+                          gap: "1rem",
                         }}
                       >
                         <div

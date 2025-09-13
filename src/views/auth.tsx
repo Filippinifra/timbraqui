@@ -28,28 +28,30 @@ export const AuthView: FC<{ type: "login" | "register" }> = ({ type }) => {
           gap: 8,
         }}
       >
-        <Typography variant="p-xs-sb" color={colors.grey}>
-          Continuando accetti automaticamente la nostra{" "}
-          <Typography
-            variant="p-xs-sb"
-            color={colors.grey}
-            component="a"
-            style={{ textDecoration: "underline" }}
-            href={Routes.cookies}
-          >
-            Cookie policy
+        <div style={{ padding: "0 16px", textAlign: "center" }}>
+          <Typography variant="p-xs-sb" color={colors.grey}>
+            Continuando accetti automaticamente la nostra{" "}
+            <Typography
+              variant="p-xs-sb"
+              color={colors.grey}
+              component="a"
+              style={{ textDecoration: "underline" }}
+              href={Routes.cookies}
+            >
+              Cookie policy
+            </Typography>
+            {" e i nostri "}
+            <Typography
+              variant="p-xs-sb"
+              color={colors.grey}
+              component="a"
+              style={{ textDecoration: "underline" }}
+              href={Routes.termsConditionsGDPR}
+            >
+              Termini e condizioni
+            </Typography>
           </Typography>
-          {" e i nostri "}
-          <Typography
-            variant="p-xs-sb"
-            color={colors.grey}
-            component="a"
-            style={{ textDecoration: "underline" }}
-            href={Routes.termsConditionsGDPR}
-          >
-            Termini e condizioni
-          </Typography>
-        </Typography>
+        </div>
         {type === "login" ? (
           <SignIn
             signUpUrl={Routes.register}
